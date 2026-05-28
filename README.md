@@ -1,10 +1,10 @@
 [RU](#beepbot-russian-version)
 
-# BeepBot
+# beepbot
 
 This project was inspired by the original `funnebot` by `@Chazoshtare`, written in Rust. The core concept of triggered sounds and audio effects was adapted and rewritten from scratch in Go to explore concurrent programming. It has been extended with native sequential queuing and simultaneous sound mixing.
 
-`BeepBot` is a lightweight Twitch sound bot designed to play audio files with real-time effects. It runs on an event-driven model using audio driver callbacks, ensuring minimal CPU usage. It connects anonymously to Twitch IRC, requiring no security OAuth tokens to read chat commands.
+`beepbot` is a lightweight Twitch sound bot designed to play audio files with real-time effects. It runs on an event-driven model using audio driver callbacks, ensuring minimal CPU usage. It connects anonymously to Twitch IRC, requiring no security OAuth tokens to read chat commands.
 
 ---
 
@@ -86,11 +86,11 @@ Sounds separated by a **space** will play sequentially (one after another) withi
 
 <a name="beepbot-russian-version"></a>
 
-# BeepBot
+# beepbot
 
 Этот проект вдохновлен оригинальным ботом `funnebot` от `@Chazoshtare`, написанным на Rust. Я взял его идею воспроизведения звуков в чате и наложения на них различных аудиоэффектов, переписал всё с нуля на Go и добавил собственный функционал очереди воспроизведения и одновременного микширования звуков.
 
-`BeepBot` — это легкий Twitch-бот для проигрывания аудиофайлов со звуковыми эффектами в реальном времени. Он не нагружает ваш компьютер фоновыми процессами и работает полностью анонимно (вам не нужно вводить свои пароли или секретные OAuth-токены для чтения чата).
+`beepbot` — это легкий Twitch-бот для проигрывания аудиофайлов со звуковыми эффектами в реальном времени. Он не нагружает ваш компьютер фоновыми процессами и работает полностью анонимно (вам не нужно вводить свои пароли или секретные OAuth-токены для чтения чата).
 
 ---
 
