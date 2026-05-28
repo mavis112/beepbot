@@ -1,10 +1,6 @@
+[RU](#beepbot-russian-version)
+
 # BeepBot
-
-![Go Version](https://img.shields.io/badge/Go-1.25.0-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Linux-lightgrey)
-
-[🇷🇺 Читать на русском языке](#beepbot-russian-version)
 
 This project was inspired by the original `funnebot` by `@Chazoshtare`, written in Rust. The core concept of triggered sounds and audio effects was adapted and rewritten from scratch in Go to explore concurrent programming. It has been extended with native sequential queuing and simultaneous sound mixing.
 
@@ -90,7 +86,7 @@ Sounds separated by a **space** will play sequentially (one after another) withi
 
 <a name="beepbot-russian-version"></a>
 
-# BeepBot (Русская версия)
+# BeepBot
 
 Этот проект вдохновлен оригинальным ботом `funnebot` от `@Chazoshtare`, написанным на Rust. Я взял его идею воспроизведения звуков в чате и наложения на них различных аудиоэффектов, переписал всё с нуля на Go и добавил собственный функционал очереди воспроизведения и одновременного микширования звуков.
 
