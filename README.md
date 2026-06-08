@@ -1,5 +1,7 @@
 [RU](#beepbot-russian-version)
 
+Inspired by `funnebot` by `@Chazoshtare`
+
 # beepbot
 
 beepbot is a lightweight, interactive Twitch sound bot that lets your chat trigger custom sound memes, generate text-to-speech (TTS) voices in multiple languages, and apply audio effects.
@@ -12,6 +14,7 @@ beepbot is a lightweight, interactive Twitch sound bot that lets your chat trigg
    `CHANNEL=your_channel_name`
 2. Place your sound files in **`.wav`** format (44100 Hz recommended) into the `sounds` folder. The filename (excluding the `.wav` extension) automatically becomes the chat command.
 3. Run the executable file.
+4. When updating to a new version, you only need to replace the old `beepbot.exe` file with the new one. Do not overwrite your configured `config.env` file or the `sounds` folder to avoid losing your data.
 
 > * **File Duration:** Use short sounds (1–10s). The bot caches all audio into RAM for instant, lag-free playback. Long music tracks will quickly overload your computer's RAM.
 
@@ -55,6 +58,8 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 
 *(Examples: `!m ru-sp150 hello`, `!m omg-ga`)*
 
+> ℹ️ *Note:* Trimming (cs/ce) is always applied to the original sound first, before any other effects are processed.
+
 ---
 
 ## Admin Commands (Broadcaster & Moderators Only)
@@ -83,6 +88,7 @@ beepbot — это легкий интерактивный Twitch-бот, кот
    `CHANNEL=имя_вашего_канала`
 2. Положите свои аудиофайлы в формате **`.wav`** (рекомендуется частота 44100 Гц) в папку `sounds`. Название файла (без расширения) становится командой вызова.
 3. Запустите исполняемый файл бота.
+4. При выходе новой версии достаточно заменить старый файл `beepbot.exe` на новый. Не перезаписывайте уже настроенный файл `config.env` и папку `sounds`, чтобы не потерять свои данные.
 
 > * **Длительность звуков:** Используйте короткие звуки (1–10 сек). Бот хранит аудио в ОЗУ для мгновенного воспроизведения. Длинные треки быстро перегрузят оперативную память вашего компьютера.
 
@@ -125,6 +131,8 @@ beepbot — это легкий интерактивный Twitch-бот, кот
 | `ga` | Гача (Gacha) | — | Случайно добавляет неиспользованные эффекты. Количество зависит от того, сколько эффектов вы уже ввели вручную (если введено 3 или более, не добавится ничего, кроме редкого 5% шанса сорвать джекпот и получить +1 эффект). |
 
 *(Примеры: `!m ru-sp150 привет`, `!m omg-ga`)*
+
+> ℹ️ *Примечание:* Обрезка (cs/ce) всегда применяется к исходному звуку первой, до наложения любых других эффектов.
 
 ---
 
