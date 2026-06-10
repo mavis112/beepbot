@@ -30,7 +30,7 @@ func main() {
 
 	soundsBuffer, errors, err := audio.CreateSoundsBuffer()
 	if err != nil {
-		exitWithError(err)
+		log.Println("sounds folder missing/empty; TTS only active")
 	}
 	if len(errors) > 0 {
 		for _, e := range errors {
