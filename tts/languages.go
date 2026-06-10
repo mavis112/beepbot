@@ -15,22 +15,22 @@ func NewTtsLanguages() map[string]string {
 		"jp": "ja-JP",
 		"cn": "zh-CN",
 
-		"pl": "pl-PL",
-		"de": "de-DE",
-		"it": "it-IT",
-		"fr": "fr-FR",
-		"es": "es-ES",
-		"pt": "pt-PT",
-		"ro": "ro-RO",
-		"tr": "tr-TR",
+		"pl":  "pl-PL",
+		"deu": "de-DE",
+		"ita": "it-IT",
+		"fr":  "fr-FR",
+		"esp": "es-ES",
+		"pt":  "pt-PT",
+		"ro":  "ro-RO",
+		"tr":  "tr-TR",
 
-		"fi": "fi-FI",
-		"is": "is-IS",
-		"no": "nb-NO",
-		"sv": "sv-SE",
+		"fi":  "fi-FI",
+		"isl": "is-IS",
+		"nor": "nb-NO",
+		"sv":  "sv-SE",
 
 		"ar": "ar-SA",
 
-		"hi": "hi-IN",
+		"hin": "hi-IN",
 	}
 }
