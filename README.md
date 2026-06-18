@@ -53,6 +53,7 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 | `ce[value]` | Cut end | 0 - 100 | Cuts the specified percentage of the sound from the end (e.g., `ce20`). |
 | `rs` | Reverse | — | Plays the sound backward. |
 | `lq` | Low Quality | — | Applies an 8-bit retro sound effect (bitcrushing). |
+| `st` | Stutter | — | Applies a rapid stutter effect to the beginning of the sound. |
 | `er` | Ear Rape | — | Applies an extreme volume overdrive. |
 | `dl` | Delay | — | Applies a decaying echo effect. |
 | `vb` | Vibrato | — | Applies a pitch-vibrating effect. |
@@ -129,6 +130,7 @@ beepbot — это легкий интерактивный Twitch-бот, кот
 | `rs` | Реверс | — | Воспроизвести звук задом наперед. |
 | `lq` | Лоу-фай | — | Эффект 8-битного ретро-звука (биткрашинг). |
 | `er` | Перегруз | — | Экстремальный перегруз громкости (Ear Rape). |
+| `st` | Заикание | — | Эффект быстрого заикания в самом начале звука. |
 | `dl` | Эхо (Delay) | — | Эффект плавного затухающего эхо. |
 | `vb` | Вибрация | — | Эффект плавного дрожания частоты (Vibrato). |
 | `ga` | Гача (Gacha) | — | Случайно добавляет неиспользованные эффекты. Количество зависит от того, сколько эффектов вы уже ввели вручную (если введено 3 или более, не добавится ничего, кроме редкого 5% шанса сорвать джекпот и получить +1 эффект). |
