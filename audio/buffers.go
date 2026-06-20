@@ -37,20 +37,23 @@ func CreateSoundsBuffer() (map[string]*beep.Buffer, []error, error) {
 			errors = append(errors, e)
 			continue
 		}
-		track, rawFormat, err := wav.Decode(data)
+		rawTrack, rawFormat, err := wav.Decode(data)
 		if err != nil {
 			e := fmt.Errorf("failed to decode audio file: %w", err)
 			errors = append(errors, e)
 			data.Close()
 			continue
 		}
+
 		trackBuff := beep.NewBuffer(format)
+		var track beep.Streamer = rawTrack
 		if rawFormat.SampleRate != 44100 {
-			resampledTrack := beep.Resample(4, rawFormat.SampleRate, format.SampleRate, track)
-			trackBuff.Append(resampledTrack)
-		} else {
-			trackBuff.Append(track)
+			track = beep.Resample(4, rawFormat.SampleRate, format.SampleRate, track)
 		}
+		if rawFormat.NumChannels == 1 {
+			track = applyStereo(track)
+		}
+		trackBuff.Append(track)
 
 		name := strings.TrimSuffix(fileName, filepath.Ext(fileName))
 		name = strings.ToLower(name)
