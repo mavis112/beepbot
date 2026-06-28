@@ -22,6 +22,11 @@ func New(lang string, text string) *Request {
 }
 
 func (r *Request) ToBuffer() (*beep.Buffer, error) {
+	runeText := []rune(r.text)
+	if len(runeText) > 200 {
+		runeText = runeText[:200]
+		r.text = string(runeText)
+	}
 	reqUrl := getUrlRequest(r.lang, r.text)
 
 	resp, err := http.Get(reqUrl)
