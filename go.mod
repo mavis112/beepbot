@@ -4,6 +4,7 @@ go 1.25.0
 
 require (
 	github.com/gempir/go-twitch-irc/v4 v4.4.1
+	github.com/gen2brain/malgo v0.11.25
 	github.com/gopxl/beep/v2 v2.1.1
 	github.com/joho/godotenv v1.5.1
 )

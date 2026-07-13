@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"beepbot/audio"
 	"log"
 	"sync"
 	"sync/atomic"
@@ -12,6 +13,7 @@ import (
 type Bot struct {
 	Client         *twitch.Client
 	Channel        string
+	player         audio.AudioOutput
 	soundsBuffer   map[string]*beep.Buffer
 	mtx            sync.RWMutex
 	fileMtx        sync.Mutex
@@ -26,10 +28,11 @@ type Bot struct {
 	volume         int
 }
 
-func New(channel string, soundsBuffer map[string]*beep.Buffer, ttsLanguages map[string]string, volume int) *Bot {
+func New(channel string, player audio.AudioOutput, soundsBuffer map[string]*beep.Buffer, ttsLanguages map[string]string, volume int) *Bot {
 	b := &Bot{
 		Client:         twitch.NewAnonymousClient(),
 		Channel:        channel,
+		player:         player,
 		soundsBuffer:   soundsBuffer,
 		queue:          make([]beep.Streamer, 0, 50),
 		queueEnabled:   false,
