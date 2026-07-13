@@ -8,24 +8,23 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
+	"sync"
 
 	"github.com/gempir/go-twitch-irc/v4"
 	"github.com/gopxl/beep/v2"
-	"github.com/gopxl/beep/v2/speaker"
 	"github.com/joho/godotenv"
 )
 
 func main() {
 	err := godotenv.Load("config.env")
 	if err != nil {
-		finalErr := fmt.Errorf("config.env file not found: %w", err)
+		finalErr := fmt.Errorf("failed to load env file: %w", err)
 		exitWithError(finalErr)
 	}
 
 	channel := os.Getenv("CHANNEL")
 	if channel == "" {
-		finalErr := fmt.Errorf("channel is missing in config.env")
+		finalErr := fmt.Errorf("missing required variable 'CHANNEL'")
 		exitWithError(finalErr)
 	}
 
@@ -42,8 +41,33 @@ func main() {
 		volume = 0
 	}
 
-	soundsBuffer, errors, err := audio.CreateSoundsBuffer()
-	if err != nil {
+	var wg sync.WaitGroup
+
+	var (
+		soundsBuffer map[string]*beep.Buffer
+		errors       []error
+		errBuff      error
+	)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		soundsBuffer, errors, errBuff = audio.CreateSoundsBuffer()
+	}()
+
+	deviceName := os.Getenv("AUDIO_DEVICE")
+	var (
+		player audio.AudioOutput
+		errPl  error
+	)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		player, errPl = initAudioPlayer(deviceName)
+	}()
+
+	wg.Wait()
+
+	if errBuff != nil {
 		log.Println("sounds folder missing/empty; TTS only active")
 	}
 	if len(errors) > 0 {
@@ -51,16 +75,14 @@ func main() {
 			log.Println(e)
 		}
 	}
+	if errPl != nil {
+		exitWithError(errPl)
+	}
+	defer player.Close()
 
 	ttsLanguages := tts.NewTtsLanguages()
 
-	b := bot.New(channel, soundsBuffer, ttsLanguages, volume)
-
-	sr := beep.SampleRate(44100)
-	if err := speaker.Init(sr, sr.N(time.Second/10)); err != nil {
-		finalErr := fmt.Errorf("speaker is failed to init: %w", err)
-		exitWithError(finalErr)
-	}
+	b := bot.New(channel, player, soundsBuffer, ttsLanguages, volume)
 
 	msgChan := make(chan twitch.PrivateMessage, 500)
 
@@ -81,7 +103,7 @@ func main() {
 
 	b.Client.Join(b.Channel)
 	if err := b.Client.Connect(); err != nil {
-		finalErr := fmt.Errorf("failed to join channel: %w", err)
+		finalErr := fmt.Errorf("irc connection failed: %w", err)
 		exitWithError(finalErr)
 	}
 }
