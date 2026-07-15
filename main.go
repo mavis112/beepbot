@@ -82,8 +82,24 @@ func main() {
 
 	ttsLanguages := tts.NewTtsLanguages()
 
-	b := bot.New(channel, player, soundsBuffer, ttsLanguages, volume)
+	var (
+		queue bool = false
+		er    bool = true
+	)
 
+	q, err := strconv.ParseBool(os.Getenv("QUEUE"))
+
+	if err == nil {
+		queue = q
+	}
+
+	e, err := strconv.ParseBool(os.Getenv("ER"))
+
+	if err == nil {
+		er = e
+	}
+
+	b := bot.New(channel, player, soundsBuffer, queue, er, ttsLanguages, volume)
 	msgChan := make(chan twitch.PrivateMessage, 500)
 
 	for range 20 {
@@ -99,6 +115,7 @@ func main() {
 
 	b.Client.OnSelfJoinMessage(func(msg twitch.UserJoinMessage) {
 		log.Printf("Successfully joined channel: %s\n", msg.Channel)
+		b.PrintState()
 	})
 
 	b.Client.Join(b.Channel)
