@@ -28,18 +28,18 @@ type Bot struct {
 	volume         int
 }
 
-func New(channel string, player audio.AudioOutput, soundsBuffer map[string]*beep.Buffer, ttsLanguages map[string]string, volume int) *Bot {
+func New(channel string, player audio.AudioOutput, soundsBuffer map[string]*beep.Buffer, queue bool, er bool, ttsLanguages map[string]string, volume int) *Bot {
 	b := &Bot{
 		Client:         twitch.NewAnonymousClient(),
 		Channel:        channel,
 		player:         player,
 		soundsBuffer:   soundsBuffer,
 		queue:          make([]beep.Streamer, 0, 50),
-		queueEnabled:   false,
+		queueEnabled:   queue,
 		queueIsPlaying: false,
 		isPlayingSound: false,
 		speakerIsMuted: false,
-		erIsOn:         true,
+		erIsOn:         er,
 		ttsLanguages:   ttsLanguages,
 		volume:         volume,
 	}
@@ -70,7 +70,7 @@ func (b *Bot) SetQEnabled(enabled bool) {
 	b.queueEnabled = enabled
 }
 
-func (b *Bot) printState() {
+func (b *Bot) PrintState() {
 	b.mtx.RLock()
 	defer b.mtx.RUnlock()
 	log.Printf("Status -> Mute: %t | Queue: %t | Er: %t | Volume: %d", b.speakerIsMuted, b.queueEnabled, b.erIsOn, b.volume)

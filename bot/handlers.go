@@ -85,19 +85,29 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
 			b.mtx.Unlock()
-			b.printState()
+			b.PrintState()
 			return true
 		case "unmute":
 			b.SetMuted(false)
-			b.printState()
+			b.PrintState()
 			return true
 		case "qon":
 			b.SetQEnabled(true)
-			b.printState()
+			if err := b.saveEnvParam("QUEUE", "true"); err != nil {
+				log.Println("failed to save queue state to config.env:", err)
+				b.PrintState()
+				return true
+			}
+			b.PrintState()
 			return true
 		case "qoff":
 			b.SetQEnabled(false)
-			b.printState()
+			if err := b.saveEnvParam("QUEUE", "false"); err != nil {
+				log.Println("failed to save queue state to config.env:", err)
+				b.PrintState()
+				return true
+			}
+			b.PrintState()
 			return true
 		case "stop":
 			b.player.Stop()
@@ -133,13 +143,23 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.mtx.Lock()
 			b.erIsOn = true
 			b.mtx.Unlock()
-			b.printState()
+			if err := b.saveEnvParam("ER", "true"); err != nil {
+				log.Println("failed to save er effect state to config.env:", err)
+				b.PrintState()
+				return true
+			}
+			b.PrintState()
 			return true
 		case "eroff":
 			b.mtx.Lock()
 			b.erIsOn = false
 			b.mtx.Unlock()
-			b.printState()
+			if err := b.saveEnvParam("ER", "false"); err != nil {
+				log.Println("failed to save er effect state to config.env:", err)
+				b.PrintState()
+				return true
+			}
+			b.PrintState()
 			return true
 		case "vol":
 			msgSlice := strings.Fields(msg.Message)
@@ -160,22 +180,29 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.mtx.Lock()
 			b.volume = v
 			b.mtx.Unlock()
-			b.fileMtx.Lock()
-			defer b.fileMtx.Unlock()
-			envMap, err := godotenv.Read("config.env")
-			if err != nil {
+			vStr := strconv.Itoa(v)
+			if err = b.saveEnvParam("VOLUME", vStr); err != nil {
 				log.Println("failed to save volume to config.env:", err)
-				b.printState()
+				b.PrintState()
 				return true
 			}
-			envMap["VOLUME"] = strconv.Itoa(v)
-			err = godotenv.Write(envMap, "config.env")
-			if err != nil {
-				log.Println("failed to save volume to config.env:", err)
-			}
-			b.printState()
+			b.PrintState()
 			return true
 		}
 	}
 	return false
+}
+
+func (b *Bot) saveEnvParam(key, val string) error {
+	b.fileMtx.Lock()
+	defer b.fileMtx.Unlock()
+	envMap, err := godotenv.Read("config.env")
+	if err != nil {
+		return err
+	}
+	envMap[key] = val
+	if err = godotenv.Write(envMap, "config.env"); err != nil {
+		return err
+	}
+	return nil
 }
