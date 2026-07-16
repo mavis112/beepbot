@@ -22,7 +22,7 @@ func NeedTranslate(effects string) (string, bool) {
 	return effects, false
 }
 
-func getTranslateReq(lang, text string) string {
+func getTranslateUrl(lang, text string) string {
 	v := url.Values{}
 	v.Add("client", "gtx")
 	v.Add("dt", "t")
@@ -32,10 +32,28 @@ func getTranslateReq(lang, text string) string {
 	return "https://translate.googleapis.com/translate_a/single?" + v.Encode()
 }
 
-func Translate(lang, text string) (string, error) {
-	reqUrl := getTranslateReq(lang, text)
+func getTranslateReq(url string) (*http.Request, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
 
-	resp, err := httpClient.Get(reqUrl)
+	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36")
+	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+	req.Header.Set("Referer", "https://translate.google.com/")
+
+	return req, nil
+}
+
+func Translate(lang, text string) (string, error) {
+	reqUrl := getTranslateUrl(lang, text)
+	req, err := getTranslateReq(reqUrl)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -73,16 +91,26 @@ func Translate(lang, text string) (string, error) {
 	if !ok {
 		return "", errors.New("bad json structure")
 	}
+
+	if len(firstLevel) == 0 {
+		return "", errors.New("empty translate response")
+	}
 	for i := range firstLevel {
 		secondLevel, ok := firstLevel[i].([]any)
 		if !ok {
 			continue
 		}
-		result, ok := secondLevel[0].(string)
+
+		if len(secondLevel) == 0 {
+			continue
+		}
+
+		res, ok := secondLevel[0].(string)
 		if !ok {
 			continue
 		}
-		finalResult += result
+
+		finalResult += res
 	}
 
 	return finalResult, nil

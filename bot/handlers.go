@@ -84,6 +84,7 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.queue = b.queue[:0]
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
+			b.playbackID++
 			b.mtx.Unlock()
 			b.PrintState()
 			return true
@@ -115,6 +116,7 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.queue = b.queue[:0]
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
+			b.playbackID++
 			b.mtx.Unlock()
 			return true
 		case "skip":
@@ -125,6 +127,7 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 					return true
 				}
 				b.isPlayingSound = false
+				b.playbackID++
 				b.mtx.Unlock()
 			}
 			b.player.Stop()
