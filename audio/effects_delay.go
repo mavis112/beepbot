@@ -28,6 +28,9 @@ func applyDelay(streamer beep.Streamer) beep.Streamer {
 }
 
 func (d *delayStreamer) Stream(samples [][2]float64) (n int, ok bool) {
+	if d.tailSamples <= 0 {
+		return 0, false
+	}
 	n, ok = d.streamer.Stream(samples)
 	originalOk := ok
 	if !originalOk && d.tailSamples > 0 {

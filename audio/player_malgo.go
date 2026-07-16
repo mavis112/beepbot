@@ -19,6 +19,7 @@ type MalgoPlayer struct {
 	device         *malgo.Device
 	mtx            sync.Mutex
 	activeStreamer beep.Streamer
+	buffer         [][2]float64
 }
 
 func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
@@ -64,19 +65,24 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 	deviceConfig.Playback.DeviceID = deviceIdPtr
 	var callback malgo.DeviceCallbacks
 	callback.Data = func(pOutputSample, pInputSamples []byte, framecount uint32) {
-		buff := make([][2]float64, framecount)
+		if len(player.buffer) != int(framecount) {
+			player.mtx.Lock()
+			player.buffer = make([][2]float64, framecount)
+			player.mtx.Unlock()
+		}
 		player.mtx.Lock()
 		if player.activeStreamer == nil {
+			clear(pOutputSample)
 			player.mtx.Unlock()
 			return
 		}
-		n, ok := player.activeStreamer.Stream(buff)
+		n, ok := player.activeStreamer.Stream(player.buffer)
 		if !ok {
 			player.activeStreamer = nil
 		}
 		player.mtx.Unlock()
 		for i := 0; i < n; i++ {
-			sample := buff[i]
+			sample := player.buffer[i]
 			left := int16(sample[0] * 32767.0)
 			right := int16(sample[1] * 32767.0)
 			offset := i * 4
@@ -96,6 +102,7 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 		return nil, fmt.Errorf("player is failed to init: %w", err)
 	}
 	if err := device.Start(); err != nil {
+		device.Uninit()
 		ctx.Uninit()
 		ctx.Free()
 		return nil, fmt.Errorf("player is failed to init: %w", err)

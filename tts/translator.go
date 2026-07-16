@@ -40,8 +40,11 @@ func getTranslateReq(url string) (*http.Request, error) {
 
 	req.Header.Set("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("Accept-Language", "ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 	req.Header.Set("Referer", "https://translate.google.com/")
+	req.Header.Set("Sec-CH-UA", `"Chromium";v="150", "Google Chrome";v="150", " Not;A Brand";v="99"`)
+	req.Header.Set("Sec-CH-UA-Mobile", "?0")
+	req.Header.Set("Sec-CH-UA-Platform", `"Windows"`)
 
 	return req, nil
 }

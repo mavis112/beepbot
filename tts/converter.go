@@ -44,7 +44,7 @@ func (r *Request) ToBuffer() (*beep.Buffer, error) {
 		if resp == nil {
 			return
 		}
-		_, _ = io.Copy(io.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 256*1024))
 		resp.Body.Close()
 	}()
 
