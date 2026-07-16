@@ -26,6 +26,7 @@ type Bot struct {
 	ttsLanguages   map[string]string
 	ttsCounter     atomic.Uint64
 	volume         int
+	playbackID     uint64
 }
 
 func New(channel string, player audio.AudioOutput, soundsBuffer map[string]*beep.Buffer, queue bool, er bool, ttsLanguages map[string]string, volume int) *Bot {
@@ -42,6 +43,7 @@ func New(channel string, player audio.AudioOutput, soundsBuffer map[string]*beep
 		erIsOn:         er,
 		ttsLanguages:   ttsLanguages,
 		volume:         volume,
+		playbackID:     0,
 	}
 	return b
 }

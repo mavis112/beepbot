@@ -76,9 +76,15 @@ func (b *Bot) playNext() {
 
 	b.isPlayingSound = true
 
+	b.playbackID++
+	currID := b.playbackID
 	b.mtx.Unlock()
 	b.player.Play(beep.Seq(nextSound, beep.Callback(func() {
 		b.mtx.Lock()
+		if currID != b.playbackID {
+			b.mtx.Unlock()
+			return
+		}
 		b.isPlayingSound = false
 		b.mtx.Unlock()
 		go b.playNext()
