@@ -61,13 +61,7 @@ func Translate(lang, text string) (string, error) {
 		return "", err
 	}
 
-	defer func() {
-		if resp == nil {
-			return
-		}
-		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 8<<10))
-		resp.Body.Close()
-	}()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return "", fmt.Errorf("status not ok: %d", resp.StatusCode)

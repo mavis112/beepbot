@@ -54,12 +54,6 @@ func (b *Bot) IsMuted() bool {
 	return b.speakerIsMuted
 }
 
-func (b *Bot) SetMuted(muted bool) {
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
-	b.speakerIsMuted = muted
-}
-
 func (b *Bot) IsQueueEnabled() bool {
 	b.mtx.RLock()
 	defer b.mtx.RUnlock()

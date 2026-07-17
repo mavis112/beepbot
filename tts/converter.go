@@ -2,7 +2,6 @@ package tts
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -40,13 +39,7 @@ func (r *Request) ToBuffer() (*beep.Buffer, error) {
 		return nil, err
 	}
 
-	defer func() {
-		if resp == nil {
-			return
-		}
-		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, 256*1024))
-		resp.Body.Close()
-	}()
+	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("status not ok: %d", resp.StatusCode)

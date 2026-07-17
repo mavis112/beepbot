@@ -79,8 +79,8 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 		switch command {
 		case "mute":
 			b.player.Stop()
-			b.SetMuted(true)
 			b.mtx.Lock()
+			b.speakerIsMuted = true
 			b.queue = b.queue[:0]
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
@@ -89,7 +89,9 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.PrintState()
 			return true
 		case "unmute":
-			b.SetMuted(false)
+			b.mtx.Lock()
+			b.speakerIsMuted = false
+			b.mtx.Unlock()
 			b.PrintState()
 			return true
 		case "qon":
@@ -120,18 +122,20 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.mtx.Unlock()
 			return true
 		case "skip":
-			if b.IsQueueEnabled() {
-				b.mtx.Lock()
+			b.mtx.Lock()
+			isQEnabled := b.queueEnabled
+			if isQEnabled {
 				if b.isPlayingSound == false {
 					b.mtx.Unlock()
 					return true
 				}
 				b.isPlayingSound = false
 				b.playbackID++
-				b.mtx.Unlock()
 			}
+			b.mtx.Unlock()
+
 			b.player.Stop()
-			if b.IsQueueEnabled() {
+			if isQEnabled {
 				b.mtx.Lock()
 				if len(b.queue) > 0 {
 					b.mtx.Unlock()
