@@ -97,11 +97,11 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 | Command | Description |
 | --- | --- |
 | `!m mute` / `unmute` | Mutes / unmutes the bot (instantly stops audio, clears the queue). |
-| `!m qon` / `qoff` | Enables / disables sequential queue (if `qoff`, sounds will overlap concurrently). |
-| `!m eron` / `eroff` | Enables / disables global ear safety (strictly blocks the `er` effect). |
+| `!m qon` / `qoff` | Enables / disables sequential queue (if `qoff`, sounds will overlap concurrently). Saved automatically (config: QUEUE).|
+| `!m eron` / `eroff` | Enables / disables global ear safety (strictly blocks the `er` effect). Saved automatically (config: ER). |
 | `!m stop` | Instantly stops currently playing sound and clears the entire queue. |
 | `!m skip` | Instantly interrupts current sound and plays the next queued item. |
-| `!m vol [value]` | Sets the master volume of the bot (range: 0-200, default: 100). The setting is automatically saved. |
+| `!m vol [value]` | Sets the master volume of the bot (range: 0-200, default: 100). Saved automatically (config: VOLUME). |
 
 ***
 
@@ -200,8 +200,8 @@ beepbot — это легкий интерактивный Twitch-бот, кот
 | Команда | Описание |
 | --- | --- |
 | `!m mute` / `unmute` | Заглушить / включить бота (при mute текущие звуки обрываются, очередь очищается). |
-| `!m qon` / `qoff` | Включить / выключить очередь (при `qoff` звуки в чате накладываются параллельно). |
-| `!m eron` / `eroff` | Включить / выключить глобальную безопасность ушей (блокирует эффект `er` для всех). |
+| `!m qon` / `qoff` | Включить / выключить очередь (при `qoff` звуки в чате накладываются параллельно). Сохраняется автоматически (config: QUEUE). |
+| `!m eron` / `eroff` | Включить / выключить глобальную безопасность ушей (блокирует эффект `er` для всех). Сохраняется автоматически (config: ER). |
 | `!m stop` | Прервать текущий звук и полностью очистить очередь. |
 | `!m skip` | Прервать текущий звук и запустить следующий из очереди. |
-| `!m vol [число]` | Устанавливает общую громкость бота (диапазон: 0-200, норма: 100). Значение автоматически сохраняется. |
+| `!m vol [число]` | Устанавливает общую громкость бота (диапазон: 0-200, норма: 100). Сохраняется автоматически (config: VOLUME). |

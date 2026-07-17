@@ -133,6 +133,11 @@ func (b *Bot) downloadTtsTask(t ttsTask, wg *sync.WaitGroup) {
 		translatedText, err := tts.Translate(t.lang, t.text)
 		if translatedText != "" && err == nil {
 			t.text = translatedText
+		} else {
+			translatedByMym, err := tts.TranslateMym(t.lang, t.text)
+			if translatedByMym != "" && err == nil {
+				t.text = translatedByMym
+			}
 		}
 	}
 	req := tts.New(t.lang, t.text)

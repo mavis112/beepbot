@@ -60,12 +60,6 @@ func (b *Bot) IsQueueEnabled() bool {
 	return b.queueEnabled
 }
 
-func (b *Bot) SetQEnabled(enabled bool) {
-	b.mtx.Lock()
-	defer b.mtx.Unlock()
-	b.queueEnabled = enabled
-}
-
 func (b *Bot) PrintState() {
 	b.mtx.RLock()
 	defer b.mtx.RUnlock()

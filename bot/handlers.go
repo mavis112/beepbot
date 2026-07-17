@@ -95,7 +95,9 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.PrintState()
 			return true
 		case "qon":
-			b.SetQEnabled(true)
+			b.mtx.Lock()
+			b.queueEnabled = true
+			b.mtx.Unlock()
 			if err := b.saveEnvParam("QUEUE", "true"); err != nil {
 				log.Println("failed to save queue state to config.env:", err)
 				b.PrintState()
@@ -104,7 +106,9 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.PrintState()
 			return true
 		case "qoff":
-			b.SetQEnabled(false)
+			b.mtx.Lock()
+			b.queueEnabled = false
+			b.mtx.Unlock()
 			if err := b.saveEnvParam("QUEUE", "false"); err != nil {
 				log.Println("failed to save queue state to config.env:", err)
 				b.PrintState()
