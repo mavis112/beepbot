@@ -15,11 +15,11 @@ import (
 )
 
 type MalgoPlayer struct {
-	context        *malgo.AllocatedContext
-	device         *malgo.Device
-	mtx            sync.Mutex
-	activeStreamer beep.Streamer
-	buffer         [][2]float64
+	context *malgo.AllocatedContext
+	device  *malgo.Device
+	mtx     sync.Mutex
+	mixer   beep.Mixer
+	buffer  [][2]float64
 }
 
 func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
@@ -71,15 +71,7 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 			player.mtx.Unlock()
 		}
 		player.mtx.Lock()
-		if player.activeStreamer == nil {
-			clear(pOutputSample)
-			player.mtx.Unlock()
-			return
-		}
-		n, ok := player.activeStreamer.Stream(player.buffer)
-		if !ok {
-			player.activeStreamer = nil
-		}
+		n, _ := player.mixer.Stream(player.buffer)
 		player.mtx.Unlock()
 		for i := 0; i < n; i++ {
 			sample := player.buffer[i]
@@ -113,13 +105,13 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 
 func (m *MalgoPlayer) Play(streamer beep.Streamer) {
 	m.mtx.Lock()
-	m.activeStreamer = streamer
+	m.mixer.Add(streamer)
 	m.mtx.Unlock()
 }
 
 func (m *MalgoPlayer) Stop() {
 	m.mtx.Lock()
-	m.activeStreamer = nil
+	m.mixer.Clear()
 	m.mtx.Unlock()
 }
 
