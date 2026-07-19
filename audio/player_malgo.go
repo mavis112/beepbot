@@ -81,11 +81,6 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 			binary.LittleEndian.PutUint16(pOutputSample[offset:], uint16(left))
 			binary.LittleEndian.PutUint16(pOutputSample[offset+2:], uint16(right))
 		}
-		for j := n; uint32(j) < framecount; j++ {
-			offset := j * 4
-			binary.LittleEndian.PutUint16(pOutputSample[offset:], 0)
-			binary.LittleEndian.PutUint16(pOutputSample[offset+2:], 0)
-		}
 	}
 	device, err := malgo.InitDevice(ctx.Context, deviceConfig, callback)
 	if err != nil {
