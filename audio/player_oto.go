@@ -10,7 +10,7 @@ import (
 
 type OtoPlayer struct{}
 
-func NewOtoPlayer(sampleRate int) (AudioOutput, error) {
+func NewOtoPlayer(sampleRate int) (*OtoPlayer, error) {
 	sr := beep.SampleRate(sampleRate)
 	if err := speaker.Init(sr, sr.N(time.Second/10)); err != nil {
 		return nil, fmt.Errorf("player is failed to init: %w", err)

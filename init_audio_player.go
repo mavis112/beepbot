@@ -2,11 +2,12 @@ package main
 
 import (
 	"beepbot/audio"
+	"beepbot/bot"
 	"log"
 	"strings"
 )
 
-func initAudioPlayer(deviceName string) (audio.AudioOutput, error) {
+func initAudioPlayer(deviceName string) (bot.AudioPlayer, error) {
 	if strings.ToLower(deviceName) == "oto" {
 		log.Println("Enforcing oto player initialization")
 		player, err := audio.NewOtoPlayer(44100)

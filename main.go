@@ -56,7 +56,7 @@ func main() {
 
 	deviceName := os.Getenv("AUDIO_DEVICE")
 	var (
-		player audio.AudioOutput
+		player bot.AudioPlayer
 		errPl  error
 	)
 	wg.Add(1)

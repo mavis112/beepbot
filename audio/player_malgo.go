@@ -22,7 +22,7 @@ type MalgoPlayer struct {
 	buffer  [][2]float64
 }
 
-func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
+func NewMalgoPlayer(sampleRate int, deviceName string) (*MalgoPlayer, error) {
 	ctx, err := malgo.InitContext([]malgo.Backend{malgo.BackendWasapi}, malgo.ContextConfig{}, nil)
 	if err != nil {
 		return nil, fmt.Errorf("context initialization failed: %w", err)
@@ -84,13 +84,13 @@ func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
 	}
 	device, err := malgo.InitDevice(ctx.Context, deviceConfig, callback)
 	if err != nil {
-		ctx.Uninit()
+		_ = ctx.Uninit()
 		ctx.Free()
 		return nil, fmt.Errorf("player is failed to init: %w", err)
 	}
 	if err := device.Start(); err != nil {
 		device.Uninit()
-		ctx.Uninit()
+		_ = ctx.Uninit()
 		ctx.Free()
 		return nil, fmt.Errorf("player is failed to init: %w", err)
 	}
@@ -115,7 +115,7 @@ func (m *MalgoPlayer) Close() {
 		m.device.Uninit()
 	}
 	if m.context != nil {
-		m.context.Uninit()
+		_ = m.context.Uninit()
 		m.context.Free()
 	}
 }

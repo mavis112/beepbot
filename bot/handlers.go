@@ -129,7 +129,7 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.mtx.Lock()
 			isQEnabled := b.queueEnabled
 			if isQEnabled {
-				if b.isPlayingSound == false {
+				if !b.isPlayingSound {
 					b.mtx.Unlock()
 					return true
 				}

@@ -10,7 +10,7 @@ import (
 
 type MalgoPlayer struct{}
 
-func NewMalgoPlayer(sampleRate int, deviceName string) (AudioOutput, error) {
+func NewMalgoPlayer(sampleRate int, deviceName string) (*MalgoPlayer, error) {
 	return nil, errors.New("hello from malgo fallback, switching to oto")
 }
 

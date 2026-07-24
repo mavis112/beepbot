@@ -49,14 +49,14 @@ func CreateSoundsBuffer() (map[string]*beep.Buffer, []error, error) {
 		case "mp3":
 			track, rawFormat, err = mp3.Decode(data)
 		default:
-			data.Close()
+			_ = data.Close()
 			continue
 		}
 
 		if err != nil {
 			e := fmt.Errorf("failed to decode audio file: %w", err)
 			errors = append(errors, e)
-			data.Close()
+			_ = data.Close()
 			continue
 		}
 		trackBuff := beep.NewBuffer(format)
@@ -70,7 +70,7 @@ func CreateSoundsBuffer() (map[string]*beep.Buffer, []error, error) {
 		name := strings.TrimSuffix(fileName, filepath.Ext(fileName))
 		name = strings.ToLower(name)
 		bufferCache[name] = trackBuff
-		data.Close()
+		_ = data.Close()
 	}
 	if len(bufferCache) == 0 {
 		finalErr := fmt.Errorf("sound list is empty")
@@ -97,7 +97,9 @@ func getRandomName(buffer map[string]*beep.Buffer) string {
 }
 
 func checkSoundFormat(data *os.File) string {
-	defer data.Seek(0, 0)
+	defer func() {
+		_, _ = data.Seek(0, 0)
+	}()
 	var check [12]byte
 
 	_, err := data.Read(check[:])
