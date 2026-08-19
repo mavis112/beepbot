@@ -19,6 +19,7 @@ type SoundWithParam struct {
 	earRape         bool
 	delay           bool
 	vibrato         bool
+	ringMod         int
 	gacha           bool
 	speedRatio      int
 }
@@ -35,6 +36,7 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		earRape:         false,
 		delay:           false,
 		vibrato:         false,
+		ringMod:         0,
 		gacha:           false,
 		speedRatio:      100,
 	}
@@ -79,12 +81,10 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 				continue
 			}
 			if cutStartPercent < 0 {
-				soundWithParam.cutStartPercent = 0
-				continue
+				cutStartPercent = 1
 			}
 			if cutStartPercent > 100 {
-				soundWithParam.cutStartPercent = 100
-				continue
+				cutStartPercent = 100
 			}
 			soundWithParam.cutStartPercent = int(cutStartPercent)
 
@@ -94,12 +94,10 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 				continue
 			}
 			if cutEndPercent < 0 {
-				soundWithParam.cutEndPercent = 0
-				continue
+				cutEndPercent = 0
 			}
 			if cutEndPercent > 100 {
-				soundWithParam.cutEndPercent = 100
-				continue
+				cutEndPercent = 100
 			}
 			soundWithParam.cutEndPercent = int(cutEndPercent)
 		case "rs":
@@ -114,6 +112,19 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			soundWithParam.delay = true
 		case "vb":
 			soundWithParam.vibrato = true
+		case "rm":
+			ringMod, err := strconv.ParseInt(string(p[2:]), 10, 64)
+			if err != nil {
+				ringMod = 50
+			}
+			if ringMod < 0 {
+				ringMod = 1
+			}
+			if ringMod > 100 {
+				ringMod = 100
+			}
+			soundWithParam.ringMod = int(ringMod)
+
 		case "ga":
 			soundWithParam.gacha = true
 		case "sp":
@@ -122,12 +133,10 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 				continue
 			}
 			if speedRatio < 10 {
-				soundWithParam.speedRatio = 10
-				continue
+				speedRatio = 10
 			}
 			if speedRatio > 200 {
-				soundWithParam.speedRatio = 200
-				continue
+				speedRatio = 200
 			}
 			soundWithParam.speedRatio = int(speedRatio)
 		}
@@ -136,7 +145,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 
 func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	appliedC := 0
-	candidates := make([]string, 0, 7)
+	candidates := make([]string, 0, 8)
 	if s.reversed {
 		appliedC++
 	} else {
@@ -169,6 +178,12 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	} else {
 		candidates = append(candidates, "vibrato")
 	}
+	if s.ringMod != 0 {
+		appliedC++
+	} else {
+		candidates = append(candidates, "ringMod")
+	}
+
 	if s.speedRatio != 100 {
 		appliedC++
 	} else {
@@ -205,6 +220,8 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.delay = true
 		case "vibrato":
 			s.vibrato = true
+		case "ringMod":
+			s.ringMod = rand.IntN(100) + 1
 		case "speed":
 			s.speedRatio = randomSpeedRatio()
 		}
@@ -311,6 +328,9 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	}
 	if s.vibrato {
 		streamer = applyVibrato(streamer)
+	}
+	if s.ringMod != 0 {
+		streamer = applyRingMod(streamer, s.ringMod)
 	}
 	if s.speedRatio != 100 {
 		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
