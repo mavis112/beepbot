@@ -31,25 +31,25 @@ func applyVibrato(streamer beep.Streamer) beep.Streamer {
 }
 
 func (v *vibratoStreamer) Stream(samples [][2]float64) (n int, ok bool) {
+	targetPos := v.pos + float64(len(samples))*(1+depth) + 2
+
+	neededSamples := int(targetPos) - v.writeCount
+	if neededSamples > 0 {
+		temp := make([][2]float64, neededSamples)
+		readCount, _ := v.streamer.Stream(temp)
+		for _, t := range temp[:readCount] {
+			v.buffer[v.writeCount&1023][0] = t[0]
+			v.buffer[v.writeCount&1023][1] = t[1]
+			v.writeCount++
+		}
+	}
 	ok = true
 	i := 0
 	for i < len(samples) {
-		for v.writeCount <= int(v.pos)+1 {
-			temp := [1][2]float64{}
-			readCount, streamOK := v.streamer.Stream(temp[:])
-			if readCount > 0 {
-				v.buffer[v.writeCount&1023][0] = temp[0][0]
-				v.buffer[v.writeCount&1023][1] = temp[0][1]
-				v.writeCount++
-			}
-			if !streamOK || readCount == 0 {
-				ok = false
-				break
-			}
-		}
 
-		if !ok {
-			return i, ok
+		if int(v.pos)+1 >= v.writeCount {
+			ok = false
+			break
 		}
 		index1 := int(v.pos)
 		index2 := index1 + 1
