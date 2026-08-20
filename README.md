@@ -8,7 +8,7 @@ Inspired by `funnebot` by `@Chazoshtare`
 
 beepbot is a lightweight, interactive Twitch sound bot that lets your chat trigger custom sound memes, generate text-to-speech (TTS) voices in multiple languages, and apply audio effects.
 
-> ℹ️ **2 New Effects:** Added Ring Modulation (`rm`) (robotic resonance) and Auto-Wah (`wa`) (vocal resonant sweep filter).
+> ℹ️ **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) (robotic resonance) and Auto-Wah (`wa`) (vocal resonant sweep filter).
 
 > ℹ️ **Audio Engine Update (v1.5.0):** Added a new audio player that supports custom output device routing (e.g., virtual audio cables for OBS isolation). [Learn more](#audio-device-setup-en)
 
