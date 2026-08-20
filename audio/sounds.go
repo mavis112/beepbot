@@ -20,6 +20,7 @@ type SoundWithParam struct {
 	delay           bool
 	vibrato         bool
 	ringMod         int
+	wah             bool
 	gacha           bool
 	speedRatio      int
 }
@@ -37,6 +38,7 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		delay:           false,
 		vibrato:         false,
 		ringMod:         0,
+		wah:             false,
 		gacha:           false,
 		speedRatio:      100,
 	}
@@ -112,6 +114,9 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			soundWithParam.delay = true
 		case "vb":
 			soundWithParam.vibrato = true
+		case "wa":
+			soundWithParam.wah = true
+
 		case "rm":
 			ringMod, err := strconv.ParseInt(string(p[2:]), 10, 64)
 			if err != nil {
@@ -145,7 +150,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 
 func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	appliedC := 0
-	candidates := make([]string, 0, 8)
+	candidates := make([]string, 0, 9)
 	if s.reversed {
 		appliedC++
 	} else {
@@ -182,6 +187,11 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 		appliedC++
 	} else {
 		candidates = append(candidates, "ringMod")
+	}
+	if s.wah {
+		appliedC++
+	} else {
+		candidates = append(candidates, "wah")
 	}
 
 	if s.speedRatio != 100 {
@@ -222,6 +232,8 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.vibrato = true
 		case "ringMod":
 			s.ringMod = rand.IntN(100) + 1
+		case "wah":
+			s.wah = true
 		case "speed":
 			s.speedRatio = randomSpeedRatio()
 		}
@@ -331,6 +343,9 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	}
 	if s.ringMod != 0 {
 		streamer = applyRingMod(streamer, s.ringMod)
+	}
+	if s.wah {
+		streamer = applyWah(streamer)
 	}
 	if s.speedRatio != 100 {
 		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
