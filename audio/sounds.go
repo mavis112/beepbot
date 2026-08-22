@@ -21,6 +21,7 @@ type SoundWithParam struct {
 	vibrato         bool
 	ringMod         int
 	wah             bool
+	tapeStop        bool
 	gacha           bool
 	speedRatio      int
 }
@@ -39,6 +40,7 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		vibrato:         false,
 		ringMod:         0,
 		wah:             false,
+		tapeStop:        false,
 		gacha:           false,
 		speedRatio:      100,
 	}
@@ -114,8 +116,6 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			soundWithParam.delay = true
 		case "vb":
 			soundWithParam.vibrato = true
-		case "wa":
-			soundWithParam.wah = true
 
 		case "rm":
 			ringMod, err := strconv.ParseInt(string(p[2:]), 10, 64)
@@ -129,7 +129,10 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 				ringMod = 100
 			}
 			soundWithParam.ringMod = int(ringMod)
-
+		case "wa":
+			soundWithParam.wah = true
+		case "ts":
+			soundWithParam.tapeStop = true
 		case "ga":
 			soundWithParam.gacha = true
 		case "sp":
@@ -150,7 +153,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 
 func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	appliedC := 0
-	candidates := make([]string, 0, 9)
+	candidates := make([]string, 0, 10)
 	if s.reversed {
 		appliedC++
 	} else {
@@ -193,6 +196,11 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	} else {
 		candidates = append(candidates, "wah")
 	}
+	if s.tapeStop {
+		appliedC++
+	} else {
+		candidates = append(candidates, "tapeStop")
+	}
 
 	if s.speedRatio != 100 {
 		appliedC++
@@ -234,6 +242,8 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.ringMod = rand.IntN(100) + 1
 		case "wah":
 			s.wah = true
+		case "ts":
+			s.tapeStop = true
 		case "speed":
 			s.speedRatio = randomSpeedRatio()
 		}
@@ -302,6 +312,7 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	var totalLen int
 	streamerSlice := make([]beep.Streamer, 0, len(s.names))
 	var streamer beep.Streamer
+	var maxLen int
 	for _, name := range s.names {
 		currBuffer := trackBuffer[name]
 		if currBuffer == nil {
@@ -314,6 +325,7 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 			start = 0
 			end = totalLen
 		}
+		maxLen = end - start
 		var str beep.Streamer
 		if s.reversed {
 			if end-start > maxReverseSamples {
@@ -347,6 +359,10 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	if s.wah {
 		streamer = applyWah(streamer)
 	}
+	if s.tapeStop {
+		streamer = applyTs(streamer, maxLen)
+	}
+
 	if s.speedRatio != 100 {
 		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
 	}
