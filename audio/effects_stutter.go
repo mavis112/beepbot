@@ -1,21 +1,59 @@
 package audio
 
 import (
-	"time"
-
 	"github.com/gopxl/beep/v2"
 )
 
-func applyStutter(streamer beep.Streamer) beep.Streamer {
-	mainPart, s1 := beep.Dup(streamer)
-	s1, s2 := beep.Dup(s1)
-	s2, s3 := beep.Dup(s2)
-	sr := beep.SampleRate(44100)
-	chunkLen := sr.N(140 * time.Millisecond)
-	c1 := beep.Take(chunkLen, s1)
-	c2 := beep.Take(chunkLen, s2)
-	c3 := beep.Take(chunkLen, s3)
+type stStreamer struct {
+	streamer  beep.Streamer
+	buffer    [][2]float64
+	chunkSize int
+	count     int
+	repIndex  int
+	readIndex int
+	preFilled bool
+}
 
-	streamer = beep.Seq(c1, c2, c3, mainPart)
-	return streamer
+func applyStutter(streamer beep.Streamer, count, intervalMs int) beep.Streamer {
+	chunkSize := 44100 * intervalMs / 1000
+
+	return &stStreamer{
+		streamer:  streamer,
+		buffer:    make([][2]float64, chunkSize),
+		chunkSize: chunkSize,
+		count:     count,
+	}
+}
+
+func (s *stStreamer) Stream(samples [][2]float64) (n int, ok bool) {
+	if !s.preFilled {
+		readCount, _ := s.streamer.Stream(s.buffer)
+		if readCount < s.chunkSize {
+			s.chunkSize = readCount
+		}
+		s.preFilled = true
+	}
+	if s.repIndex >= s.count {
+		return s.streamer.Stream(samples)
+	}
+	for i := range len(samples) {
+		if s.repIndex >= s.count {
+			readCount, ok := s.streamer.Stream(samples[i:])
+			return i + readCount, ok
+		}
+		samples[i][0] = s.buffer[s.readIndex][0]
+		samples[i][1] = s.buffer[s.readIndex][1]
+		s.readIndex++
+
+		if s.readIndex >= s.chunkSize {
+			s.readIndex = 0
+			s.repIndex++
+		}
+
+	}
+	return len(samples), true
+}
+
+func (s *stStreamer) Err() error {
+	return s.streamer.Err()
 }

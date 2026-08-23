@@ -14,7 +14,8 @@ type SoundWithParam struct {
 	cutStartPercent int
 	cutEndPercent   int
 	reversed        bool
-	stutter         bool
+	stutterCount    int
+	stutterInterval int
 	lowQuality      bool
 	earRape         bool
 	delay           bool
@@ -33,7 +34,8 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		cutStartPercent: 0,
 		cutEndPercent:   0,
 		reversed:        false,
-		stutter:         false,
+		stutterCount:    0,
+		stutterInterval: 0,
 		lowQuality:      false,
 		earRape:         false,
 		delay:           false,
@@ -107,7 +109,44 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 		case "rs":
 			soundWithParam.reversed = true
 		case "st":
-			soundWithParam.stutter = true
+			var (
+				count    int64 = 3
+				interval int64 = 140
+				err      error
+			)
+			if p[2:] == "" {
+				soundWithParam.stutterCount = int(count)
+				soundWithParam.stutterInterval = int(interval)
+				continue
+			}
+			parts := strings.Split(p[2:], "_")
+			count, err = strconv.ParseInt(parts[0], 10, 64)
+			if err != nil {
+				count = 3
+			}
+			if len(parts) > 1 {
+
+				interval, err = strconv.ParseInt(parts[1], 10, 64)
+				if err != nil {
+					interval = 140
+				}
+			}
+
+			if count < 1 {
+				count = 1
+			}
+			if count > 8 {
+				count = 8
+			}
+			if interval < 60 {
+				interval = 60
+			}
+			if interval > 300 {
+				interval = 300
+			}
+			soundWithParam.stutterCount = int(count)
+			soundWithParam.stutterInterval = int(interval)
+
 		case "lq":
 			soundWithParam.lowQuality = true
 		case "er":
@@ -159,7 +198,7 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	} else {
 		candidates = append(candidates, "reversed")
 	}
-	if s.stutter {
+	if s.stutterCount != 0 {
 		appliedC++
 	} else {
 		candidates = append(candidates, "stutter")
@@ -229,7 +268,8 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 		case "reversed":
 			s.reversed = true
 		case "stutter":
-			s.stutter = true
+			s.stutterCount = rand.IntN(8) + 1
+			s.stutterInterval = rand.IntN(241) + 60
 		case "lowQuality":
 			s.lowQuality = true
 		case "earRape":
@@ -239,7 +279,7 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 		case "vibrato":
 			s.vibrato = true
 		case "ringMod":
-			s.ringMod = rand.IntN(100) + 1
+			s.ringMod = rand.IntN(91) + 10
 		case "wah":
 			s.wah = true
 		case "ts":
@@ -338,8 +378,8 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 		streamerSlice = append(streamerSlice, str)
 	}
 	streamer = beep.Mix(streamerSlice...)
-	if s.stutter {
-		streamer = applyStutter(streamer)
+	if s.stutterCount != 0 {
+		streamer = applyStutter(streamer, s.stutterCount, s.stutterInterval)
 	}
 	if s.lowQuality {
 		streamer = applyLowQuality(streamer)
