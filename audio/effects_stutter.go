@@ -33,11 +33,11 @@ func (s *stStreamer) Stream(samples [][2]float64) (n int, ok bool) {
 		}
 		s.preFilled = true
 	}
-	if s.repIndex >= s.count {
+	if s.repIndex > s.count {
 		return s.streamer.Stream(samples)
 	}
 	for i := range len(samples) {
-		if s.repIndex >= s.count {
+		if s.repIndex > s.count {
 			readCount, ok := s.streamer.Stream(samples[i:])
 			return i + readCount, ok
 		}
