@@ -21,7 +21,6 @@ type SoundWithParam struct {
 	delay           bool
 	vibrato         bool
 	ringMod         int
-	wah             bool
 	tapeStop        bool
 	gacha           bool
 	speedRatio      int
