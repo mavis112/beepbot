@@ -41,7 +41,6 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		delay:           false,
 		vibrato:         false,
 		ringMod:         0,
-		wah:             false,
 		tapeStop:        false,
 		gacha:           false,
 		speedRatio:      100,
@@ -168,8 +167,6 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 				ringMod = 100
 			}
 			soundWithParam.ringMod = int(ringMod)
-		case "wa":
-			soundWithParam.wah = true
 		case "ts":
 			soundWithParam.tapeStop = true
 		case "ga":
@@ -192,7 +189,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 
 func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	appliedC := 0
-	candidates := make([]string, 0, 10)
+	candidates := make([]string, 0, 9)
 	if s.reversed {
 		appliedC++
 	} else {
@@ -229,11 +226,6 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 		appliedC++
 	} else {
 		candidates = append(candidates, "ringMod")
-	}
-	if s.wah {
-		appliedC++
-	} else {
-		candidates = append(candidates, "wah")
 	}
 	if s.tapeStop {
 		appliedC++
@@ -280,8 +272,6 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.vibrato = true
 		case "ringMod":
 			s.ringMod = rand.IntN(91) + 10
-		case "wah":
-			s.wah = true
 		case "ts":
 			s.tapeStop = true
 		case "speed":
@@ -395,9 +385,6 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	}
 	if s.ringMod != 0 {
 		streamer = applyRingMod(streamer, s.ringMod)
-	}
-	if s.wah {
-		streamer = applyWah(streamer)
 	}
 	if s.tapeStop {
 		streamer = applyTs(streamer, maxLen)
