@@ -8,7 +8,7 @@ Inspired by `funnebot` by `@Chazoshtare`
 
 beepbot is a lightweight, interactive Twitch sound bot that lets your chat trigger custom sound memes, generate text-to-speech (TTS) voices in multiple languages, and apply audio effects.
 
-> ℹ️ **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) (robotic resonance) and Auto-Wah (`wa`) (vocal resonant sweep filter).
+> ℹ️ **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) (robotic resonance) and Tape Stop (`ts`) (smooth vinyl slow-down). Completely refactored Stutter (`st`) and Delay (`dl`) for high-speed performance.
 
 > ℹ️ **Audio Engine Update (v1.5.0):** Added a new audio player that supports custom output device routing (e.g., virtual audio cables for OBS isolation). [Learn more](#audio-device-setup-en)
 
@@ -75,18 +75,20 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 | `ce[value]` | Cut end | 0 - 100 | Cuts the specified percentage of the sound from the end (e.g., `ce20`). |
 | `rs` | Reverse | — | Plays the sound backward. |
 | `lq` | Low Quality | — | Applies an 8-bit retro sound effect (bitcrushing). |
-| `st` | Stutter | — | Applies a rapid stutter effect to the beginning of the sound. |
+| `st[value]` | Stutter | 1 - 8 / 60-300 | Applies a rapid stutter effect to the beginning of the sound (Default: 3 repetitions and 140ms interval for plain `st`; customize with number of repetitions`st5` or interval `st_200` or both `st5_200`) |
 | `er` | Ear Rape | — | Applies an extreme volume overdrive. |
 | `dl` | Delay | — | Applies a decaying echo effect. |
 | `vb` | Vibrato | — | Applies a pitch-vibrating effect. |
-| `rm` | Ring Modulation | 1 - 100 | Applies a metallic, robotic ring effect (Default: `50` for plain `rm`, or append a number: `rm20` - deeper, `rm80` - brighter). |
-| `wa` | Auto-wah | — | Adds a sweeping resonant filter that creates a "wah-wah" effect. |
+| `rm[value]` | Ring Modulation | 1 - 100 | Applies a metallic, robotic ring effect (Default: `50` for plain `rm`, or append a number: `rm20` - deeper, `rm80` - brighter). |
+| `ts` | Tape Stop | — | Smoothly decelerates and pitches down the end of the sound (like stopping a vinyl player). |
 | `ga` | Gacha | — | Randomly adds unused effects. The number of added effects depends on how many you already specified (if you have already specified 3 or more, no effects are added unless you trigger a rare 5% jackpot, which adds 1 more) |
 | `tr` | Translation | — | **TTS only.** Translates the text into the target language (e.g., `ru-tr hello`). |
 
 *(Examples: `!m ru-sp150 hello`, `!m omg-ga`)*
 
 > ℹ️ *Note:* Trimming (cs/ce) is always applied to the original sound first, before any other effects are processed.
+
+> ℹ️ *Note:* Tape Stop (`ts`) might work unexpectedly on long TTS messages due to Google's automatic trailing silence.
 
 <a name="tts-limit-en"></a>
 
@@ -115,7 +117,7 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 
 beepbot — это легкий интерактивный Twitch-бот, который позволяет зрителям запускать звуковые мемы, озвучивать текст (TTS) на разных языках и накладывать аудиоэффекты.
 
-> ℹ️ **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) (роботизированный резонанс) и Auto-Wah (`wa`) (динамический фильтр «вау-вау»).
+> ℹ️ **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) (роботизированный резонанс) и Tape Stop (`ts`) (плавная остановка винила). Полностью переработаны Stutter (`st`) и Delay (`dl`) для максимальной производительности.
 
 > ℹ️ **Обновление аудио-движка (v1.5.0):** Добавлен новый плеер с поддержкой выбора устройства вывода звука (например, для изоляции дорожки бота в OBS через виртуальный кабель). [Подробнее](#audio-device-setup-ru)
 
@@ -183,17 +185,19 @@ beepbot — это легкий интерактивный Twitch-бот, кот
 | `rs` | Реверс | — | Воспроизвести звук задом наперед. |
 | `lq` | Лоу-фай | — | Эффект 8-битного ретро-звука (биткрашинг). |
 | `er` | Перегруз | — | Экстремальный перегруз громкости (Ear Rape). |
-| `st` | Заикание | — | Эффект быстрого заикания в самом начале звука. |
+| `st[число]` | Заикание | 1 - 8 / 60 - 300 | Эффект быстрого заикания в самом начале звука (по умолчанию: 3 повторения, 140 мс для обычного `st`; настраивается через указание количества повторений `st5` или величины интервала `st_200`, или вместе `st5_200`) |
 | `dl` | Эхо (Delay) | — | Эффект плавного затухающего эхо. |
 | `vb` | Вибрация | — | Эффект плавного дрожания частоты (Vibrato). |
-| `rm` | Ring Modulation | 1 - 100 | Добавляет металлический, роботизированный резонанс (по умолчанию: `50` при вводе `rm`, либо добавьте число: `rm20`— глубже, `rm80` — ярче). |
-| `wa` | Auto-wah | — | Добавляет скользящий резонансный фильтр с эффектом «вау-вау». |
+| `rm[число]` | Ring Modulation | 1 - 100 | Добавляет металлический, роботизированный резонанс (по умолчанию: `50` при вводе `rm`, либо добавьте число: `rm20`— глубже, `rm80` — ярче). |
+| `ts` | Tape Stop | — | Плавно замедляет скорость и высоту тона в самом конце звука (эффект остановки виниловой пластинки). |
 | `ga` | Гача (Gacha) | — | Случайно добавляет неиспользованные эффекты. Количество зависит от того, сколько эффектов уже применено к звуку (если применено 3 или более, то не добавится ничего, кроме редкого 5% шанса сорвать джекпот и получить +1 эффект). |
 | `tr` | Перевод | — | **Только для TTS.** Переводит текст на указанный язык (например, `ru-tr hello`). |
 
 *(Примеры: `!m ru-sp150 привет`, `!m omg-ga`)*
 
 > ℹ️ *Примечание:* Обрезка (cs/ce) всегда применяется к исходному звуку первой, до наложения любых других эффектов.
+
+> ℹ️ *Примечание:* Эффект Tape Stop (`ts`) может работать непредсказуемо на длинных ТТС-сообщениях из-за автоматического добавления тишины в конце фраз со стороны Google.
 
 <a name="tts-limit-ru"></a>
 
