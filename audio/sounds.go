@@ -271,7 +271,7 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.vibrato = true
 		case "ringMod":
 			s.ringMod = rand.IntN(91) + 10
-		case "ts":
+		case "tapeStop":
 			s.tapeStop = true
 		case "speed":
 			s.speedRatio = randomSpeedRatio()
