@@ -354,7 +354,9 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 			start = 0
 			end = totalLen
 		}
-		maxLen = end - start
+		if currLen := end - start; currLen > maxLen {
+			maxLen = currLen
+		}
 		var str beep.Streamer
 		if s.reversed {
 			if end-start > maxReverseSamples {
@@ -367,6 +369,9 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 		streamerSlice = append(streamerSlice, str)
 	}
 	streamer = beep.Mix(streamerSlice...)
+	if s.tapeStop {
+		streamer = applyTs(streamer, maxLen)
+	}
 	if s.stutterCount != 0 {
 		streamer = applyStutter(streamer, s.stutterCount, s.stutterInterval)
 	}
@@ -376,19 +381,15 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	if s.earRape {
 		streamer = applyEarRape(streamer)
 	}
-	if s.delay {
-		streamer = applyDelay(streamer)
-	}
 	if s.vibrato {
 		streamer = applyVibrato(streamer)
 	}
 	if s.ringMod != 0 {
 		streamer = applyRingMod(streamer, s.ringMod)
 	}
-	if s.tapeStop {
-		streamer = applyTs(streamer, maxLen)
+	if s.delay {
+		streamer = applyDelay(streamer)
 	}
-
 	if s.speedRatio != 100 {
 		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
 	}
