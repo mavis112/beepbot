@@ -25,8 +25,16 @@ func (b *Bot) handleMessage(msg twitch.PrivateMessage) {
 	}
 
 	command := strings.ToLower(msgSlice[0])
-
-	if command == "!m" {
+	if strings.HasPrefix(command, "!") {
+		if command == "!m" {
+			b.playSound(msg)
+			return
+		}
+		converted, ok := convertMsg(msg.Message, b.soundsBuffer, b.ttsLanguages)
+		if !ok {
+			return
+		}
+		msg.Message = converted
 		b.playSound(msg)
 	}
 }

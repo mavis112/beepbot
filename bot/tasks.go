@@ -29,6 +29,22 @@ const (
 	TaskNone  TaskType = "none"
 )
 
+var effectsMap = map[string]struct{}{
+	"sp": {},
+	"cs": {},
+	"ce": {},
+	"rs": {},
+	"lq": {},
+	"er": {},
+	"st": {},
+	"dl": {},
+	"vb": {},
+	"rm": {},
+	"ts": {},
+	"ga": {},
+	"tr": {},
+}
+
 func (b *Bot) isCommand(msg string) (TaskType, bool) {
 	fullCommand := strings.SplitN(msg, "-", 2)
 	comSlice := strings.Split(fullCommand[0], "+")
@@ -45,6 +61,25 @@ func (b *Bot) isCommand(msg string) (TaskType, bool) {
 		}
 	}
 	return TaskNone, false
+}
+
+func (b *Bot) isCommandInTts(word string) bool {
+	if !strings.Contains(word, "-") {
+		return false
+	}
+	if strings.HasSuffix(word, "-") {
+		return true
+	}
+	wSlice := strings.Split(word, "-")
+	suffix := wSlice[1:]
+	for _, eff := range suffix {
+		effName, _ := parseEff(eff)
+		_, ok := effectsMap[effName]
+		if ok {
+			return true
+		}
+	}
+	return false
 }
 
 func (b *Bot) parseMessage(msgSlice []string) []PlayTask {
@@ -90,7 +125,7 @@ func (b *Bot) parseMessage(msgSlice []string) []PlayTask {
 			textTts := []string{}
 			j := i + 1
 			for j < len(msgSlice) {
-				if _, ok := b.isCommand(msgSlice[j]); !ok {
+				if !b.isCommandInTts(msgSlice[j]) {
 					textTts = append(textTts, msgSlice[j])
 					j++
 				} else {
