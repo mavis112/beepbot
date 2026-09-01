@@ -70,6 +70,10 @@ func (b *Bot) playSound(msg twitch.PrivateMessage) {
 		defer b.deleteKeys(keysToDelete)
 	}
 
+	if b.IsMuted() {
+		return
+	}
+
 	finalStreamer := b.assembleStreamer(taskSlice)
 	if finalStreamer == nil {
 		return
@@ -89,6 +93,9 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 			b.player.Stop()
 			b.mtx.Lock()
 			b.speakerIsMuted = true
+			for i := range b.queue {
+				b.queue[i] = nil
+			}
 			b.queue = b.queue[:0]
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
@@ -127,6 +134,9 @@ func (b *Bot) handleAdminCommand(msg twitch.PrivateMessage, command string) bool
 		case "stop":
 			b.player.Stop()
 			b.mtx.Lock()
+			for i := range b.queue {
+				b.queue[i] = nil
+			}
 			b.queue = b.queue[:0]
 			b.queueIsPlaying = false
 			b.isPlayingSound = false
