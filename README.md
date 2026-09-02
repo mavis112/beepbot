@@ -8,7 +8,11 @@ Inspired by `funnebot` by `@Chazoshtare`
 
 beepbot is an interactive Twitch sound bot that plays custom sounds, generates TTS voices in multiple languages, and applies audio effects.
 
-> ℹ️ **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) and Tape Stop (`ts`). Completely refactored Stutter (`st`) and Delay (`dl`).
+> [!NOTE]
+> **Support for funnebot command syntax (v1.6.3):** Added full support for funnebot command syntax. Also, a protective hyphen rule has been introduced for the original syntax to prevent accidental sound playback inside TTS text. [Read more](#hyphen-rule-en)
+
+> [!NOTE]
+> **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) and Tape Stop (`ts`). Completely refactored Stutter (`st`) and Delay (`dl`).
 
 ---
 
@@ -19,8 +23,11 @@ beepbot is an interactive Twitch sound bot that plays custom sounds, generates T
 3. Run the executable file of the bot.
 4. When updating to a new version, you only need to replace the old `beepbot.exe` file with the new one. Do not overwrite your configured `config.env` file or the `sounds` folder to avoid losing your data.
 
-> * **File Duration:** Use short sounds (1–10s). Long sounds will quickly overload your computer's RAM.
-> * The release package already includes a `sounds` folder with a sample `beep.wav` file. You can run the bot immediately and test it in your chat using the `!m beep` command.
+> [!CAUTION]
+> **File Duration:** Use short sounds (1–10s). Long sounds will quickly overload your computer's RAM.
+
+> [!TIP]
+> The release package already includes a `sounds` folder with a sample `beep.wav` file. You can run the bot immediately and test it in your chat using the `!m beep` command.
 
 ---
 
@@ -39,6 +46,9 @@ Starting from version 1.5.0, a new optional parameter `AUDIO_DEVICE` is added to
 
 ## Chat Commands
 
+> [!NOTE]
+> Starting from version 1.6.3, you can write commands using the `funnebot` syntax (including sequential chains via `+!` and effects like `f`, `s`, `c`, `sk`, `r`, etc.). Effects not present in `beepbot` (currently `rv` and `vl`) will be ignored.
+
 The main command for viewers is:
 `!m [sound_name_or_language_code]-[effects]`
 
@@ -53,7 +63,26 @@ Specify the language code before the text you want to read:
 
 ### 2. Combining Sounds & Speech
 * **Simultaneous Mix (using `+`):** `!m sound1+sound2-rs` (both sounds will play at the exact same time, reversed).
-* **Sequential Chain (using spaces):** `!m sound1-sp150 en hello sound2` (plays sped-up sound1, then reads "hello" in English, and finally plays sound2).
+* **Sequential Chain (using spaces):** `!m sound1-sp150 en hello sound2-` (plays sped-up sound1, then reads "hello" in English, and finally plays sound2).
+
+<a name="hyphen-rule-en"></a>
+## Hyphen Rule for Commands inside TTS
+
+To prevent common words inside TTS text (like `a`, `yes`, `no`) from accidentally triggering sounds of the same name, a simple rule now applies:
+
+After a language code, any command (sound or language switch) will only trigger if it contains a hyphen (`-`).
+
+> [!IMPORTANT]
+> * If you need a plain sound without effects after TTS text, append a hyphen at the end: use `alert-` instead of `alert`.
+> * If a sound has effects (like `alert-sp150`), no changes are needed.
+
+Examples:
+
+Suppose we have sounds `car` and `alert`:
+
+- `!m en I have a nice car` — The bot speaks the sentence normally (the word "car" is spoken, the sound "car" is not triggered).
+- `!m en have a nice car-` — Speaks the text up to the word car, then plays the `car` sound.
+- `!m en have a nice car- alert` — Speaks the text up to the word car, then plays the `car` and `alert` sounds sequentially (even though the `alert` sound has no effects, adding a hyphen is not required since a sound was played before it, not TTS).
 
 ---
 
@@ -79,15 +108,18 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 
 *(Examples: `!m ru-sp150 hello`, `!m omg-ga`)*
 
-> ℹ *Note:* Trimming (cs/ce) is always applied to the original sound first, before any other effects are processed.
+> [!NOTE]
+> Trimming (`cs`/`ce`) is always applied to the original sound first, before any other effects are processed.
 
-> ℹ *Note:* Tape Stop (`ts`) might work unexpectedly on long TTS messages due to Google's automatic trailing silence.
+> [!WARNING]
+> Tape Stop (`ts`) might work unexpectedly on long TTS messages due to Google's automatic trailing silence.
 
 <a name="tts-limit-en"></a>
 
->  **TTS Length Limit (200 chars):** Due to using free web API it has a strict 200-character limit per request. To bypass this limit, chain multiple TTS commands sequentially in one message:
+> [!IMPORTANT]
+> **TTS Length Limit (200 chars):** Due to using free web API it has a strict 200-character limit per request. To bypass this limit, chain multiple TTS commands sequentially in one message:
 > * ❌ `!m ru long_text_300_chars` (Bad - will be truncated to 200 chars).
-> *  `!m ru text_150_chars ru text_150_chars` (Excellent - plays fully without truncation).
+> * `!m ru text_150_chars ru- text_150_chars` (Excellent - plays fully without truncation).
 
 ---
 
@@ -95,9 +127,9 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 
 | Command | Description |
 | --- | --- |
-| `!m mutes` / `unmute` | Mutes / unmutes the bot (instantly stops audio, clears the queue). |
+| `!m mute` / `unmute` | Mutes / unmutes the bot (instantly stops audio, clears the queue). |
 | `!m qon` / `qoff` | Enables / disables sequential queue (if `qoff`, sounds will overlap concurrently). Saved automatically (config: QUEUE).|
-| `!m eron` / `eroff` | Enables / disables global ear safety (strictly blocks the `er` effect). Saved automatically (config: ER). |
+| `!m eron` / `erfoot` | Enables / disables global ear safety (strictly blocks the `er` effect). Saved automatically (config: ER). |
 | `!m stop` | Instantly stops currently playing sound and clears the entire queue. |
 | `!m skip` | Instantly interrupts current sound and plays the next queued item. |
 | `!m vol [value]` | Sets the master volume of the bot (range: 0-200, default: 100). Saved automatically (config: VOLUME). |
@@ -111,7 +143,11 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 
 beepbot — это интерактивный Twitch-бот, который позволяет проигрывать звуковые файлы, озвучивать текст на разных языках и накладывать аудиоэффекты.
 
-> ℹ️ **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) и Tape Stop (`ts`). Полностью переработаны Stutter (`st`) и Delay (`dl`).
+> [!NOTE]
+> **Поддержка синтаксиса команд funnebot (v1.6.3):** Добавлена полная поддержка синтаксиса команд funnebot. Также для оригинального синтаксиса введено защитное правило дефиса для предотвращения ложного запуска звуков внутри текста TTS. [Подробнее](#hyphen-rule-ru)
+
+> [!NOTE]
+> **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) и Tape Stop (`ts`). Полностью переработаны Stutter (`st`) и Delay (`dl`).
 
 ---
 
@@ -122,8 +158,11 @@ beepbot — это интерактивный Twitch-бот, который по
 3. Запустите исполняемый файл бота.
 4. При выходе новой версии достаточно заменить старый файл `beepbot.exe` на новый. Не перезаписывайте уже настроенный файл `config.env` и папку `sounds`, чтобы не потерять свои данные.
 
-> * **Длительность звуков:** Используйте короткие звуки (1–10 сек). Длинные звуки быстро перегрузят оперативную память вашего компьютера.
-> * Релизный архив уже содержит папку `sounds` с тестовым файлом `beep.wav`. Вы можете сразу запустить бота и проверить его работу в чате командой `!m beep`.
+> [!CAUTION]
+> **Длительность звуков:** Используйте короткие звуки (1–10 сек). Длинные звуки быстро перегрузят оперативную память вашего компьютера.
+
+> [!TIP]
+> Релизный архив уже содержит папку `sounds` с тестовым файлом `beep.wav`. Вы можете сразу запустить бота и проверить его работу в чате командой `!m beep`.
 
 ---
 
@@ -142,6 +181,9 @@ beepbot — это интерактивный Twitch-бот, который по
 
 ## Синтаксис команд в чате
 
+> [!NOTE]
+> Начиная с версии 1.6.3, вы можете писать команды в синтаксисе `funnebot` (включая последовательные цепочки через `+!` и эффекты `f`, `s`, `c`, `sk`, `r` и т.д.). Эффекты, которых нет в `beepbot` (на данный момент это `rv` и `vl`), будут проигнорированы.
+
 Основная команда для зрителей:
 `!m [имя_звука_или_код_языка]-[эффекты]`
 
@@ -156,7 +198,26 @@ beepbot — это интерактивный Twitch-бот, который по
 
 ### 2. Комбинирование (Миксы и Цепочки)
 * **Микс (одновременно через `+`):** `!m sound1+sound2-rs` (звуки запустятся одновременно и оба проиграются реверсом).
-* **Цепочка (последовательно через пробел):** `!m sound1-sp150 ru привет sound2` (сначала проиграется ускоренный sound1, затем по-русски озвучится слово «привет», а в конце запустится sound2).
+* **Цепочка (последовательно через пробел):** `!m sound1-sp150 ru привет sound2-` (сначала проиграется ускоренный sound1, затем по-русски озвучится слово «привет», а в конце запустится sound2).
+
+<a name="hyphen-rule-ru"></a>
+## Правило дефиса для команд внутри TTS
+
+Чтобы обычные слова внутри текста TTS (например, `a`, `yes`, `no`) случайно не запускали одноименные звуковые файлы, теперь действует простое правило:
+
+После кода языка любая команда (звук или голосовая озвучка) сработает, только если она содержит дефис (`-`).
+
+> [!IMPORTANT]
+> * Если вам нужен звук без эффектов после текста TTS, добавьте дефис на конце: `alert-` вместо `alert`.
+> * Если у звука есть эффекты (например, `alert-sp150`), ничего менять не нужно.
+
+Примеры:
+
+Допустим у нас есть звуки `car` и `alert`:
+
+- `!m en I have a nice car` — Бот просто озвучит фразу целиком.
+- `!m en have a nice car-` — Озвучит фразу до слова car, а затем сыграет звук car.
+- `!m en have a nice car- alert` — Озвучит фразу до слова car, затем сыграет последовательно звуки car и alert (хоть к звуку `alert` не применено эффектов, добавлять дефис не обязательно, т.к. до него играл звук, а не ттс).
 
 ---
 
@@ -182,15 +243,18 @@ beepbot — это интерактивный Twitch-бот, который по
 
 *(Примеры: `!m ru-sp150 привет`, `!m omg-ga`)*
 
-> ℹ️ *Примечание:* Обрезка (cs/ce) всегда применяется к исходному звуку первой, до наложения любых других эффектов.
+> [!NOTE]
+> Обрезка (cs/ce) всегда применяется к исходному звуку первой, до наложения любых других эффектов.
 
-> ℹ️ *Примечание:* Эффект Tape Stop (`ts`) может работать непредсказуемо на длинных ТТС-сообщениях из-за автоматического добавления тишины в конце фраз со стороны Google.
+> [!WARNING]
+> Эффект Tape Stop (`ts`) может работать непредсказуемо на длинных ТТС-сообщениях из-за автоматического добавления тишины в конце фраз со стороны Google.
 
 <a name="tts-limit-ru"></a>
 
->  **Лимит длины TTS (200 симв.):** Из-за использования бесплатного API лимит озвучки для одного куска текста — строго 200 символов. Чтобы обойти это ограничение, склеивайте команды цепочкой:
+> [!IMPORTANT]
+> **Лимит длины TTS (200 симв.):** Из-за использования бесплатного API лимит озвучки для одного куска текста — строго 200 символов. Чтобы обойти это ограничение, склеивайте команды цепочкой:
 > * ❌ `!m ru-sp150 длинный_текст_300_символов` (Плохо — обрежется до 200 симв.).
-> *  `!m ru-sp150 текст_150_символов ru-sp150 текст_150_символов` (Отлично — проиграется полностью).
+> * `!m ru-sp150 текст_150_символов ru-sp150 текст_150_символов` (Отлично — проиграется полностью).
 
 ---
 

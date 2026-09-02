@@ -16,10 +16,10 @@ func convertMsg(msg string, buf map[string]*beep.Buffer, ttsLang map[string]stri
 		_, okSound := buf[commandName]
 		_, okTts := ttsLang[commandName]
 
-		if !okSound && !okTts {
+		if !okSound && !okTts && commandName != "rand" {
 			return "", false
 		}
-		convertedMsg := "!m " + convertCommand(message)
+		convertedMsg := "!m " + convertCommand(message, false)
 		return convertedMsg, true
 	}
 	messageSlice := strings.Split(message, "+!")
@@ -28,20 +28,16 @@ func convertMsg(msg string, buf map[string]*beep.Buffer, ttsLang map[string]stri
 	for _, command := range messageSlice {
 		cmdSlice := strings.SplitN(command, " ", 2)
 		cmdNameSlice := strings.Split(cmdSlice[0], "-")
-		convertedCommand := convertCommand(command)
-
-		if hadTts && len(cmdNameSlice) == 1 {
-			convertedCommand += "-"
-		}
+		convertedCommand := convertCommand(command, hadTts)
 
 		convertedSlice = append(convertedSlice, convertedCommand)
-
-		_, okSound := buf[strings.ToLower(cmdNameSlice[0])]
-		_, okTts := ttsLang[strings.ToLower(cmdNameSlice[0])]
+		commandName := strings.ToLower(cmdNameSlice[0])
+		_, okSound := buf[commandName]
+		_, okTts := ttsLang[commandName]
 		if okTts {
 			hadTts = true
 		}
-		if okSound {
+		if okSound || commandName == "rand" {
 			hadTts = false
 		}
 	}
@@ -49,7 +45,7 @@ func convertMsg(msg string, buf map[string]*beep.Buffer, ttsLang map[string]stri
 	return convertedMsg, true
 }
 
-func convertCommand(msg string) string {
+func convertCommand(msg string, hadTts bool) string {
 	msgSlice := strings.SplitN(msg, " ", 2)
 	var text string
 	if len(msgSlice) > 1 {
@@ -105,14 +101,21 @@ func convertCommand(msg string) string {
 		}
 	}
 	if hasClipping {
-		convertedEffects = append(convertedEffects, "cs"+strconv.Itoa(int(startPercent)))
-		convertedEffects = append(convertedEffects, "ce"+strconv.Itoa(int(100.0-endPercent)))
-
+		if startPercent > 0 {
+			convertedEffects = append(convertedEffects, "cs"+strconv.Itoa(int(startPercent)))
+		}
+		if endPercent < 100 {
+			convertedEffects = append(convertedEffects, "ce"+strconv.Itoa(int(100.0-endPercent)))
+		}
 	}
 	convertedCmd := name
+	if hadTts && len(convertedEffects) == 0 {
+		convertedCmd += "-"
+	}
 	if len(convertedEffects) > 0 {
 		convertedCmd += "-" + strings.Join(convertedEffects, "-")
 	}
+
 	if text != "" {
 		convertedCmd += " " + text
 	}
@@ -123,19 +126,9 @@ func convertEffects(eff string) string {
 	effName, effValue := parseEff(eff)
 	loweredEffName := strings.ToLower(effName)
 	switch loweredEffName {
-	case "r", "rs":
+	case "r":
 		return "rs"
-	case "rv", "dl":
-		return "dl"
-	case "er", "lq", "vb", "ga", "tr", "ts":
-		return loweredEffName
-	case "rm", "st", "sp", "cs", "ce":
-		return loweredEffName + effValue
 	case "f":
-		if effValue == "" {
-			return "sp130"
-		}
-
 		v, err := strconv.Atoi(effValue)
 		if err != nil {
 			return "sp130"
@@ -146,9 +139,6 @@ func convertEffects(eff string) string {
 		}
 		return "sp" + strconv.Itoa(v)
 	case "s":
-		if effValue == "" {
-			return "sp70"
-		}
 		v, err := strconv.Atoi(effValue)
 		if err != nil {
 			return "sp70"
@@ -158,9 +148,8 @@ func convertEffects(eff string) string {
 			v = 10
 		}
 		return "sp" + strconv.Itoa(v)
-	default:
-		return ""
 	}
+	return loweredEffName + effValue
 }
 
 func parseEff(eff string) (effName, effValue string) {
@@ -171,10 +160,11 @@ func parseEff(eff string) (effName, effValue string) {
 			break
 		}
 	}
-	effName = eff
 	if digitId >= 0 {
 		effName = eff[:digitId]
 		effValue = eff[digitId:]
+	} else {
+		effName = eff
 	}
 	return effName, effValue
 }
