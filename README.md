@@ -9,7 +9,7 @@ Inspired by `funnebot` by `@Chazoshtare`
 beepbot is an interactive Twitch sound bot that plays custom sounds, generates TTS voices in multiple languages, and applies audio effects.
 
 > [!NOTE]
-> **Support for funnebot command syntax (v1.6.3):** Added full support for funnebot command syntax. Also, a protective hyphen rule has been introduced for the original syntax to prevent accidental sound playback inside TTS text. [Read more](#hyphen-rule-en)
+> **Support for funnebot command syntax (v1.6.2):** Added full support for funnebot command syntax. Also, a protective hyphen rule has been introduced for the original syntax to prevent accidental sound playback inside TTS text. [Read more](#hyphen-rule-en)
 
 > [!NOTE]
 > **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) and Tape Stop (`ts`). Completely refactored Stutter (`st`) and Delay (`dl`).
@@ -47,7 +47,7 @@ Starting from version 1.5.0, a new optional parameter `AUDIO_DEVICE` is added to
 ## Chat Commands
 
 > [!NOTE]
-> Starting from version 1.6.3, you can write commands using the `funnebot` syntax (including sequential chains via `+!` and effects like `f`, `s`, `c`, `sk`, `r`, etc.). Effects not present in `beepbot` (currently `rv` and `vl`) will be ignored.
+> Starting from version 1.6.2, you can write commands using the `funnebot` syntax (including sequential chains via `+!` and effects like `f`, `s`, `c`, `sk`, `r`, etc.). Effects not present in `beepbot` (currently `rv` and `vl`) will be ignored.
 
 The main command for viewers is:
 `!m [sound_name_or_language_code]-[effects]`
@@ -144,7 +144,7 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 beepbot — это интерактивный Twitch-бот, который позволяет проигрывать звуковые файлы, озвучивать текст на разных языках и накладывать аудиоэффекты.
 
 > [!NOTE]
-> **Поддержка синтаксиса команд funnebot (v1.6.3):** Добавлена полная поддержка синтаксиса команд funnebot. Также для оригинального синтаксиса введено защитное правило дефиса для предотвращения ложного запуска звуков внутри текста TTS. [Подробнее](#hyphen-rule-ru)
+> **Поддержка синтаксиса команд funnebot (v1.6.2):** Добавлена полная поддержка синтаксиса команд funnebot. Также для оригинального синтаксиса введено защитное правило дефиса для предотвращения ложного запуска звуков внутри текста TTS. [Подробнее](#hyphen-rule-ru)
 
 > [!NOTE]
 > **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) и Tape Stop (`ts`). Полностью переработаны Stutter (`st`) и Delay (`dl`).
@@ -182,7 +182,7 @@ beepbot — это интерактивный Twitch-бот, который по
 ## Синтаксис команд в чате
 
 > [!NOTE]
-> Начиная с версии 1.6.3, вы можете писать команды в синтаксисе `funnebot` (включая последовательные цепочки через `+!` и эффекты `f`, `s`, `c`, `sk`, `r` и т.д.). Эффекты, которых нет в `beepbot` (на данный момент это `rv` и `vl`), будут проигнорированы.
+> Начиная с версии 1.6.2, вы можете писать команды в синтаксисе `funnebot` (включая последовательные цепочки через `+!` и эффекты `f`, `s`, `c`, `sk`, `r` и т.д.). Эффекты, которых нет в `beepbot` (на данный момент это `rv` и `vl`), будут проигнорированы.
 
 Основная команда для зрителей:
 `!m [имя_звука_или_код_языка]-[эффекты]`
