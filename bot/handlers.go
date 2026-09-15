@@ -19,7 +19,7 @@ func (b *Bot) handleMessage(msg twitch.PrivateMessage) {
 		return
 	}
 
-	if len(msgSlice) > 2 && strings.HasPrefix(msgSlice[0], "@") {
+	if len(msgSlice) >= 2 && strings.HasPrefix(msgSlice[0], "@") {
 		msgSlice = msgSlice[1:]
 		msg.Message = strings.Join(msgSlice, " ")
 	}
