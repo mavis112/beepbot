@@ -21,7 +21,7 @@ func NewTtsLanguages() map[string]string {
 
 		"pl": "pl-PL",
 		"sk": "sk-SK",
-		"sr": "sr-RS",
+		"rs": "sr-RS",
 		"cz": "cs-CZ",
 		"de": "de-DE",
 		"nl": "nl-NL",
