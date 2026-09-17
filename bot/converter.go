@@ -62,9 +62,13 @@ func convertCommand(msg string, hadTts bool) string {
 		currentLen  float64
 		hasClipping bool
 	)
+	isReversed := false
 	for _, eff := range cmdSlice[1:] {
 		effName, effValue := parseEff(eff)
 		switch strings.ToLower(effName) {
+		case "r", "rs":
+			isReversed = true
+			continue
 		case "c":
 			var (
 				v   int
@@ -76,7 +80,11 @@ func convertCommand(msg string, hadTts bool) string {
 			}
 			val := float64(v)
 			currentLen = endPercent - startPercent
-			endPercent = startPercent + currentLen*(val/100.0)
+			if !isReversed {
+				endPercent = startPercent + currentLen*(val/100.0)
+			} else {
+				startPercent = endPercent - currentLen*(val/100.0)
+			}
 			hasClipping = true
 			continue
 		case "sk":
@@ -90,7 +98,11 @@ func convertCommand(msg string, hadTts bool) string {
 			}
 			val := float64(v)
 			currentLen = endPercent - startPercent
-			startPercent = startPercent + currentLen*(val/100.0)
+			if !isReversed {
+				startPercent = startPercent + currentLen*(val/100.0)
+			} else {
+				endPercent = endPercent - currentLen*(val/100.0)
+			}
 			hasClipping = true
 			continue
 
@@ -99,6 +111,9 @@ func convertCommand(msg string, hadTts bool) string {
 		if convertedEffect != "" {
 			convertedEffects = append(convertedEffects, convertedEffect)
 		}
+	}
+	if isReversed {
+		convertedEffects = append(convertedEffects, "rs")
 	}
 	if hasClipping {
 		if startPercent > 0 {
@@ -126,8 +141,6 @@ func convertEffects(eff string) string {
 	effName, effValue := parseEff(eff)
 	loweredEffName := strings.ToLower(effName)
 	switch loweredEffName {
-	case "r":
-		return "rs"
 	case "f":
 		v, err := strconv.Atoi(effValue)
 		if err != nil {
