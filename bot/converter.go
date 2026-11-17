@@ -1,6 +1,7 @@
 package bot
 
 import (
+	"math"
 	"strconv"
 	"strings"
 
@@ -116,11 +117,13 @@ func convertCommand(msg string, hadTts bool) string {
 		convertedEffects = append(convertedEffects, "rs")
 	}
 	if hasClipping {
+		cutStart := roundPercent(startPercent)
+		cutEnd := roundPercent(100.0 - endPercent)
 		if startPercent > 0 {
-			convertedEffects = append(convertedEffects, "cs"+strconv.Itoa(int(startPercent)))
+			convertedEffects = append(convertedEffects, "cs"+formatPercent(cutStart))
 		}
 		if endPercent < 100 {
-			convertedEffects = append(convertedEffects, "ce"+strconv.Itoa(int(100.0-endPercent)))
+			convertedEffects = append(convertedEffects, "ce"+formatPercent(cutEnd))
 		}
 	}
 	convertedCmd := name
@@ -135,6 +138,14 @@ func convertCommand(msg string, hadTts bool) string {
 		convertedCmd += " " + text
 	}
 	return convertedCmd
+}
+
+func roundPercent(v float64) float64 {
+	return math.Round(v*1e4) / 1e4
+}
+
+func formatPercent(v float64) string {
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }
 
 func convertEffects(eff string) string {

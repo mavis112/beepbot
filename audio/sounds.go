@@ -2,6 +2,7 @@ package audio
 
 import (
 	"errors"
+	"math"
 	"math/rand/v2"
 	"strconv"
 	"strings"
@@ -11,8 +12,8 @@ import (
 
 type SoundWithParam struct {
 	names           []string
-	cutStartPercent int
-	cutEndPercent   int
+	cutStartPercent float64
+	cutEndPercent   float64
 	reversed        bool
 	stutterCount    int
 	stutterInterval int
@@ -80,8 +81,8 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 		}
 		switch string(p[:2]) {
 		case "cs":
-			cutStartPercent, err := strconv.ParseInt(string(p[2:]), 10, 64)
-			if err != nil {
+			cutStartPercent, err := strconv.ParseFloat(string(p[2:]), 64)
+			if err != nil || math.IsNaN(cutStartPercent) {
 				continue
 			}
 			if cutStartPercent < 0 {
@@ -90,11 +91,11 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			if cutStartPercent > 100 {
 				cutStartPercent = 100
 			}
-			soundWithParam.cutStartPercent = int(cutStartPercent)
+			soundWithParam.cutStartPercent = cutStartPercent
 
 		case "ce":
-			cutEndPercent, err := strconv.ParseInt(string(p[2:]), 10, 64)
-			if err != nil {
+			cutEndPercent, err := strconv.ParseFloat(string(p[2:]), 64)
+			if err != nil || math.IsNaN(cutEndPercent) {
 				continue
 			}
 			if cutEndPercent < 0 {
@@ -103,7 +104,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			if cutEndPercent > 100 {
 				cutEndPercent = 100
 			}
-			soundWithParam.cutEndPercent = int(cutEndPercent)
+			soundWithParam.cutEndPercent = cutEndPercent
 		case "rs":
 			soundWithParam.reversed = true
 		case "st":
@@ -348,8 +349,8 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 			return nil, errors.New("corrupted or empty buffer")
 		}
 		totalLen = currBuffer.Len()
-		start := totalLen * s.cutStartPercent / 100
-		end := totalLen * (100 - s.cutEndPercent) / 100
+		start := int(float64(totalLen) * s.cutStartPercent / 100)
+		end := int(float64(totalLen) * (100 - s.cutEndPercent) / 100)
 		if start >= end {
 			start = 0
 			end = totalLen
