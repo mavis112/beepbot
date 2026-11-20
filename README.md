@@ -9,10 +9,10 @@ Inspired by `funnebot` by `@Chazoshtare`
 beepbot is an interactive Twitch sound bot that plays custom sounds, generates TTS voices in multiple languages, and applies audio effects.
 
 > [!NOTE]
-> **Support for funnebot command syntax (v1.6.2):** Added full support for funnebot command syntax. Also, a protective hyphen rule has been introduced for the original syntax to prevent accidental sound playback inside TTS text. [Read more](#hyphen-rule-en)
+> **New Effect (v1.7.0):** Added Reverb (`rv`).
 
 > [!NOTE]
-> **2 New Effects (v1.6.0):** Added Ring Modulation (`rm`) and Tape Stop (`ts`). Completely refactored Stutter (`st`) and Delay (`dl`).
+> **Support for funnebot command syntax (v1.6.2):** Added full support for funnebot command syntax. Also, a protective hyphen rule has been introduced for the original syntax to prevent accidental sound playback inside TTS text. [Read more](#hyphen-rule-en)
 
 ---
 
@@ -47,7 +47,7 @@ Starting from version 1.5.0, a new optional parameter `AUDIO_DEVICE` is added to
 ## Chat Commands
 
 > [!NOTE]
-> Starting from version 1.6.2, you can write commands using the `funnebot` syntax (including sequential chains via `+!` and effects like `f`, `s`, `c`, `sk`, `r`, etc.). Effects not present in `beepbot` (currently `rv` and `vl`) will be ignored.
+> Starting from version 1.6.2, you can write commands using the `funnebot` syntax (including sequential chains via `+!` and effects like `f`, `s`, `c`, `sk`, `r`, etc.). Effects not present in `beepbot` (currently `vl`) will be ignored.
 
 The main command for viewers is:
 `!m [sound_name_or_language_code]-[effects]`
@@ -100,6 +100,7 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 | `er` | Ear Rape | — | Extreme volume overdrive. |
 | `st[value]` | Stutter | 1 - 8 / 60 - 300 | Rapid stutter effect at the beginning of the sound (Default: 3 repetitions, 140ms interval for plain `st`; customize with repetitions `st5`, interval `st_200`, or both `st5_200`). |
 | `dl` | Delay | — | Applies a decaying echo effect. |
+| `rv` | Reverb | — | Applies a reverb effect. |
 | `vb` | Vibrato | — | Applies a pitch-vibrating effect. |
 | `rm[value]` | Ring Modulation | 1 - 100 | Applies a metallic, robotic ring effect (Default: `50` for plain `rm`, or append a number: `rm20` - deeper, `rm80` - brighter). |
 | `ts` | Tape Stop | — | Smoothly decelerates and pitches down the end of the sound (like stopping a cassette player). |
@@ -144,10 +145,11 @@ Viewers can modify any sound or TTS by adding parameters separated by a hyphen `
 beepbot — это интерактивный Twitch-бот, который позволяет проигрывать звуковые файлы, озвучивать текст на разных языках и накладывать аудиоэффекты.
 
 > [!NOTE]
-> **Поддержка синтаксиса команд funnebot (v1.6.2):** Добавлена полная поддержка синтаксиса команд funnebot. Также для оригинального синтаксиса введено защитное правило дефиса для предотвращения ложного запуска звуков внутри текста TTS. [Подробнее](#hyphen-rule-ru)
+> **Новых эффект (v1.7.0):** Добавлен Reverb (`rv`).
+
 
 > [!NOTE]
-> **2 новых эффекта (v1.6.0):** Добавлены Ring Modulation (`rm`) и Tape Stop (`ts`). Полностью переработаны Stutter (`st`) и Delay (`dl`).
+> **Поддержка синтаксиса команд funnebot (v1.6.2):** Добавлена полная поддержка синтаксиса команд funnebot. Также для оригинального синтаксиса введено защитное правило дефиса для предотвращения ложного запуска звуков внутри текста TTS. [Подробнее](#hyphen-rule-ru)
 
 ---
 
@@ -182,7 +184,7 @@ beepbot — это интерактивный Twitch-бот, который по
 ## Синтаксис команд в чате
 
 > [!NOTE]
-> Начиная с версии 1.6.2, вы можете писать команды в синтаксисе `funnebot` (включая последовательные цепочки через `+!` и эффекты `f`, `s`, `c`, `sk`, `r` и т.д.). Эффекты, которых нет в `beepbot` (на данный момент это `rv` и `vl`), будут проигнорированы.
+> Начиная с версии 1.6.2, вы можете писать команды в синтаксисе `funnebot` (включая последовательные цепочки через `+!` и эффекты `f`, `s`, `c`, `sk`, `r` и т.д.). Эффекты, которых нет в `beepbot` (на данный момент это `vl`), будут проигнорированы.
 
 Основная команда для зрителей:
 `!m [имя_звука_или_код_языка]-[эффекты]`
@@ -235,6 +237,7 @@ beepbot — это интерактивный Twitch-бот, который по
 | `er` | Ear Rape | — | Экстремальный перегруз громкости. |
 | `st[число]` | Stutter | 1 - 8 / 60 - 300 | Эффект быстрого заикания в самом начале звука (по умолчанию: 3 повторения, 140 мс для обычного `st`; настраивается через указание количества повторений `st5` или величины интервала `st_200`, или всё вместе `st5_200`). |
 | `dl` | Delay | — | Эффект плавного затухающего эхо. |
+| `rv` | Reverb | — | Эффект реверберации. |
 | `vb` | Vibrato | — | Эффект плавного дрожания частоты. |
 | `rm[число]` | Ring Modulation | 1 - 100 | Добавляет металлический, роботизированный резонанс (по умолчанию: `50` при вводе `rm`, либо добавьте число: `rm20` — глубже, `rm80` — ярче). |
 | `ts` | Tape Stop | — | Плавно замедляет скорость и высоту тона в самом конце звука (эффект остановки кассетного плеера). |

@@ -20,6 +20,7 @@ type SoundWithParam struct {
 	lowQuality      bool
 	earRape         bool
 	delay           bool
+	reverb          bool
 	vibrato         bool
 	ringMod         int
 	tapeStop        bool
@@ -39,6 +40,7 @@ func CreateSoundWithParam(sounds string, effects string, trackBuffer map[string]
 		lowQuality:      false,
 		earRape:         false,
 		delay:           false,
+		reverb:          false,
 		vibrato:         false,
 		ringMod:         0,
 		tapeStop:        false,
@@ -152,6 +154,8 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 			soundWithParam.earRape = true
 		case "dl":
 			soundWithParam.delay = true
+		case "rv":
+			soundWithParam.reverb = true
 		case "vb":
 			soundWithParam.vibrato = true
 
@@ -189,7 +193,7 @@ func parseParam(soundWithParam *SoundWithParam, params []string) {
 
 func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 	appliedC := 0
-	candidates := make([]string, 0, 9)
+	candidates := make([]string, 0, 10)
 	if s.reversed {
 		appliedC++
 	} else {
@@ -216,6 +220,11 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 		appliedC++
 	} else {
 		candidates = append(candidates, "delay")
+	}
+	if s.reverb {
+		appliedC++
+	} else {
+		candidates = append(candidates, "reverb")
 	}
 	if s.vibrato {
 		appliedC++
@@ -268,6 +277,8 @@ func (s *SoundWithParam) applyRandomEffects(isErOn bool) {
 			s.earRape = true
 		case "delay":
 			s.delay = true
+		case "reverb":
+			s.reverb = true
 		case "vibrato":
 			s.vibrato = true
 		case "ringMod":
@@ -388,11 +399,14 @@ func CreateStreamerWithParameter(s *SoundWithParam, trackBuffer map[string]*beep
 	if s.ringMod != 0 {
 		streamer = applyRingMod(streamer, s.ringMod)
 	}
+	if s.speedRatio != 100 {
+		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
+	}
 	if s.delay {
 		streamer = applyDelay(streamer)
 	}
-	if s.speedRatio != 100 {
-		streamer = beep.ResampleRatio(3, float64(s.speedRatio)/100.0, streamer)
+	if s.reverb {
+		streamer = applyReverb(streamer)
 	}
 
 	return streamer, nil
